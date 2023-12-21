@@ -18,12 +18,9 @@ Once you've generated an access token using our sdk, you'll be able to share it 
 The application provides a lot of features and configuration options. They are
 documented in the following pages:
 
-- [Get Started](Documentation/GetStarted.md)
 - [Installation Guide](Documentation/InstallationGuide.md)
-- [Experience Editor](Documentation/ExperienceEditor.md)
 - [Inversive SDK Code Documentation](Documentation/CodeDocumentation.md)
 
 ## Resources
 
-- [Documentation](https://omiyagames.github.io/template-unity-package/)
 - [Change Log](/CHANGELOG.md)

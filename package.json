@@ -19,7 +19,7 @@
     {
       "displayName": "Inversive SDK Starter Assets",
       "description": "Contains prefabs and demo scene implementing our sdk",
-      "path": "Samples/Demo/Starter Assets/"
+      "path": "Samples~/Demo/Starter Assets/"
     }
   ]
 }
