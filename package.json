@@ -1,0 +1,25 @@
+{
+  "name": "com.inversive.inversive-sdk",
+  "version": "0.0.0",
+  "displayName": "Inversive SDK",
+  "description": "Our Unity SDK empowers developers to seamlessly integrate our API into their games, allowing users to navigate game sequences organized into immersive 'chapters,' each with its unique set of actions. Additionally, our SDK facilitates effortless data uploading to your dedicated back office, ensuring efficient management of user information within the inversive environment.",
+  "unity": "2019.1",
+  "unityRelease": "0b5",
+  "author": {
+    "name": "Inversive",
+    "email": "contact@inversive.fr",
+    "url": "https://inversive.fr/"
+  },
+  "dependencies": {
+    "com.unity.editorcoroutines": "1.0.0",
+    "com.unity.nuget.newtonsoft-json": "3.0.2",
+    "com.unity.textmeshpro": "3.0.6"
+  },
+  "samples": [
+    {
+      "displayName": "Inversive SDK Starter Assets",
+      "description": "Contains prefabs and demo scene implementing our sdk",
+      "path": "Samples/Demo/Starter Assets/"
+    }
+  ]
+}

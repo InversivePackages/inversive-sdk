@@ -1,0 +1,42 @@
+name: CI
+on:
+  push:
+    tags:
+      - '*.*.*'
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set Git user
+      run: |
+        git config --global user.name "${{ github.actor }}"
+        git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Update Version in package.json and CHANGELOG.md
+      run: |
+        sed -i "s/\"version\": \".*\"/\"version\": \"${GITHUB_REF_NAME}\"/" package.json
+    - name: Get Last Version and Commit Messages
+      run: |
+        LAST_VERSION_REV_LIST=$(git rev-list --tags --skip=1 --max-count=1)
+        LAST_VERSION=$(git describe --abbrev=0 --tags ${LAST_VERSION_REV_LIST})
+        COMMIT_MESSAGES=$(git log --format="- %s" "${LAST_VERSION}"..HEAD)
+        if grep -q "# Change Log:" CHANGELOG.md; then
+          START_LINE=$(grep -n "# Change Log:" CHANGELOG.md | cut -d ":" -f 1)
+          INSERT_LINE=$((START_LINE + 1))
+          printf "\n\n## ${GITHUB_REF_NAME}\n\n%s\n" "$COMMIT_MESSAGES" | sed -e "${INSERT_LINE}r /dev/stdin" CHANGELOG.md > CHANGELOG.tmp
+          mv CHANGELOG.tmp CHANGELOG.md
+        else
+          printf "# Change Log:\n\n## ${GITHUB_REF_NAME}\n\n%s\n" "$COMMIT_MESSAGES" >> CHANGELOG.md
+        fi
+    - name: Add, Commit, and Push Changes
+      run: |
+        git add package.json
+        git add CHANGELOG.md
+        git commit -m "Update version to ${GITHUB_REF_NAME} in package.json and CHANGELOG.md"
+        git push origin HEAD:main
