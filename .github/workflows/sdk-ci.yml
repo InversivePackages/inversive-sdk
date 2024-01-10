@@ -34,6 +34,13 @@ jobs:
         else
           printf "# Change Log:\n\n## ${GITHUB_REF_NAME}\n\n%s\n" "$COMMIT_MESSAGES" >> CHANGELOG.md
         fi
+    - name: Call Changelog API
+      run: |
+        LAST_VERSION_REV_LIST=$(git rev-list --tags --skip=1 --max-count=1)
+        LAST_VERSION=$(git describe --abbrev=0 --tags ${LAST_VERSION_REV_LIST})
+        COMMIT_MESSAGES=$(git log --format="- %s" "${LAST_VERSION}"..HEAD)
+        ESCAPED_COMMIT_MESSAGES=$(echo "$COMMIT_MESSAGES" | jq --raw-input --slurp '.')
+        curl -X POST -d "{\"Version\": \"${GITHUB_REF_NAME}\", \"LatestChanges\": $ESCAPED_COMMIT_MESSAGES}" -H "Content-Type: application/json" -H "AuthorizeFromCi: ${{ secrets.AUTHORIZE_FROM_CI }}" ${{ secrets.API_URL }}/dev/changelog/set
     - name: Add, Commit, and Push Changes
       run: |
         git add package.json
