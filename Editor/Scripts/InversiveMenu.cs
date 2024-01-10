@@ -1,6 +1,9 @@
+using GluonGui.WorkspaceWindow.Views.WorkspaceExplorer;
 using InversiveSdkEditor;
 using System;
 using System.Collections;
+using System.IO;
+using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -16,17 +19,19 @@ public class InversiveMenu : EditorWindow
         window.Show();
     }
 
+    private static readonly string changeLogfullPath = "Packages/com.inversive.inversive-sdk/CHANGELOG.md";
+    private static readonly string packagefullPath = "Packages/com.inversive.inversive-sdk/package.json";
     private static readonly string ChangeLogGUID = "";
     private static readonly string ResourcesGUID = "";
     private static readonly string BuiltInGUID = "";
     private static readonly string InversiveIconPath = "Packages/com.inversive.inversive-sdk/Editor/UI/inversive-logo.png";
 
 
-    public static readonly string ChangelogURL = "";
+    public static readonly string ChangelogURL = new Uri(InversiveUtilities.GetApiUrl() + "dev/changelog/get-latest/").AbsoluteUri;
 
-    private static readonly string ManualURL = "";
-    private static readonly string BasicURL = "";
-    private static readonly string BeginnerURL = "";
+    private static readonly string ManualURL = "https://github.com/InversivePackages/inversive-sdk/blob/main/Documentation/InstallationGuide.md";
+    private static readonly string BasicURL = "https://github.com/InversivePackages/inversive-sdk/blob/main/Documentation/CodeDocumentation.md";
+    private static readonly string BeginnerURL = "https://github.com/InversivePackages/inversive-sdk/blob/main/Documentation/GetStarted.md";
     private static readonly string SiteURL = "";
     private static readonly string StoreURL = "";
 
@@ -72,7 +77,7 @@ public class InversiveMenu : EditorWindow
     [NonSerialized]
     GUIStyle m_linkStyle = null;
 
-    private ChangeLogInfo m_changeLog;
+    private ChangeLogInfoModel m_changeLog;
     private bool m_infoDownloaded = false;
     private string m_newVersion = string.Empty;
 
@@ -112,12 +117,14 @@ public class InversiveMenu : EditorWindow
         if (webIcon == null)
         {
             webIcon = EditorGUIUtility.IconContent("BuildSettings.Web.Small").image;
-            LoginButton = new GUIContent(" Generate Access Token", webIcon);
+            LoginButton = new GUIContent(" Generate App Id", webIcon);
         }
 
         if (m_changeLog == null)
         {
             var changelog = AssetDatabase.LoadAssetAtPath<TextAsset>(AssetDatabase.GUIDToAssetPath(ChangeLogGUID));
+            string jsonContent = File.ReadAllText(packagefullPath);
+            var packageModel = PackageModel.CreateFromJSON(jsonContent);
             string lastUpdate = string.Empty;
             if (changelog != null)
             {
@@ -125,7 +132,7 @@ public class InversiveMenu : EditorWindow
                 lastUpdate = lastUpdate.Replace("    *", "    \u25CB");
                 lastUpdate = lastUpdate.Replace("* ", "\u2022 ");
             }
-            m_changeLog = new ChangeLogInfo(VersionInfo.FullNumber, lastUpdate);
+            m_changeLog = new ChangeLogInfoModel(packageModel.version, lastUpdate);
         }
 
         if (InversiveIcon == null)
@@ -148,20 +155,12 @@ public class InversiveMenu : EditorWindow
         if (!m_infoDownloaded)
         {
             m_infoDownloaded = true;
-
+            //LoadChangelog();
             StartBackgroundTask(StartRequest(ChangelogURL, () =>
             {
-                var temp = ChangeLogInfo.CreateFromJSON(www.downloadHandler.text);
-                if (temp != null && temp.Version >= m_changeLog.Version)
-                {
-                    m_changeLog = temp;
-                }
-                // improve this later
-                int major = m_changeLog.Version / 10000;
-                int minor = (m_changeLog.Version / 1000) - major * 10;
-                int release = (m_changeLog.Version / 100) - major * 100 - minor * 10;
-                int revision = ((m_changeLog.Version / 10) - major * 1000 - minor * 100 - release * 10) + (m_changeLog.Version - major * 10000 - minor * 1000 - release * 100);
-                m_newVersion = major + "." + minor + "." + release + "r" + revision;
+                var temp = ChangeLogInfoModel.CreateFromJSON(www.downloadHandler.text);
+                m_changeLog.latestChanges = temp?.latestChanges ?? "";
+                m_newVersion = temp?.version ?? m_changeLog.version;
                 Repaint();
             }));
         }
@@ -268,17 +267,16 @@ public class InversiveMenu : EditorWindow
                 GUILayout.Space(4);
                 GUILayout.Label(UpdateTitle, m_labelStyle);
                 m_scrollPosition = GUILayout.BeginScrollView(m_scrollPosition, "ProgressBarBack", GUILayout.ExpandHeight(true), GUILayout.ExpandWidth(true));
-                GUILayout.Label(m_changeLog.LastUpdate, "WordWrappedMiniLabel", GUILayout.ExpandHeight(true));
+                GUILayout.Label(m_changeLog.latestChanges, "WordWrappedMiniLabel", GUILayout.ExpandHeight(true));
                 GUILayout.EndScrollView();
 
                 EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
                 {
                     EditorGUILayout.BeginVertical();
                     GUILayout.Label(InversiveSDKEditorTitle, m_labelStyle);
+                    GUILayout.Label("Installed Version: " + PackageModel.CreateFromJSON(File.ReadAllText(packagefullPath)).version);
 
-                    GUILayout.Label("Installed Version: " + VersionInfo.StaticToString());
-
-                    if (m_changeLog.Version > VersionInfo.FullNumber)
+                    if (CompareVersions(m_newVersion, PackageModel.CreateFromJSON(File.ReadAllText(packagefullPath)).version) > 0)
                     {
                         var cache = GUI.color;
                         GUI.color = Color.red;
@@ -352,7 +350,7 @@ public class InversiveMenu : EditorWindow
 #if UNITY_2017_2_OR_NEWER
             yield return www.SendWebRequest();
 #else
-				yield return www.Send();
+            yield return www.Send();
 #endif
 
             while (www.isDone == false)
@@ -390,23 +388,66 @@ public class InversiveMenu : EditorWindow
         EditorApplication.update += closureCallback;
     }
 
+    public static int CompareVersions(string version1, string version2)
+    {
+        if (string.IsNullOrEmpty(version1))
+        {
+            return string.IsNullOrEmpty(version2) ? 0 : -1;
+        }
+        else if (string.IsNullOrEmpty(version2))
+        {
+            return 1;
+        }
+
+        string[] parts1 = version1.Split('.');
+        string[] parts2 = version2.Split('.');
+
+        int minLength = Math.Min(parts1.Length, parts2.Length);
+
+        for (int i = 0; i < minLength; i++)
+        {
+            int part1 = int.Parse(parts1[i]);
+            int part2 = int.Parse(parts2[i]);
+
+            if (part1 != part2)
+            {
+                return part1 > part2 ? 1 : -1;
+            }
+        }
+
+        return parts1.Length != parts2.Length ? parts1.Length > parts2.Length ? 1 : -1 : 0;
+    }
 }
 
 
 [Serializable]
-internal class ChangeLogInfo
+internal class ChangeLogInfoModel
 {
-    public int Version;
-    public string LastUpdate;
+    public int id;
+    public string version;
+    public string latestChanges;
 
-    public static ChangeLogInfo CreateFromJSON(string jsonString)
+    public static ChangeLogInfoModel CreateFromJSON(string jsonString)
     {
-        return JsonUtility.FromJson<ChangeLogInfo>(jsonString);
+        return JsonUtility.FromJson<ChangeLogInfoModel>(jsonString);
     }
 
-    public ChangeLogInfo(int version, string lastUpdate)
+    public ChangeLogInfoModel(string version, string latestChanges)
     {
-        Version = version;
-        LastUpdate = lastUpdate;
+        this.version = version;
+        this.latestChanges = latestChanges;
     }
+}
+
+[Serializable]
+internal class PackageModel
+{
+    public string name;
+    public string version;
+
+    public static PackageModel CreateFromJSON(string jsonString)
+    {
+        return JsonUtility.FromJson<PackageModel>(jsonString);
+    }
+
 }

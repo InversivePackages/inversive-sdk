@@ -48,6 +48,8 @@ public class ExperienceEditor : EditorWindow
     Texture webIcon = null;
     [NonSerialized]
     Texture textIcon = null;
+    [NonSerialized]
+    Texture generateAccessTokenIcon = null;
 
     RenderTexture rt;
 
@@ -55,6 +57,7 @@ public class ExperienceEditor : EditorWindow
     GUIContent AddActionButton = null;
     GUIContent AddValueButton = null;
     GUIContent AddRatingLevelButton = null;
+    GUIContent LoginButton = null;
     GUIContent RemoveAllButton = null;
     GUIContent SaveButton = null;
     GUIContent ResetButton = null;
@@ -212,6 +215,11 @@ public class ExperienceEditor : EditorWindow
             webIcon = EditorGUIUtility.IconContent("CollabPull").image;
             UpdateButton = new GUIContent(" Update Model", webIcon, "Pull the remote model");
         }
+        if (generateAccessTokenIcon == null)
+        {
+            generateAccessTokenIcon = EditorGUIUtility.IconContent("BuildSettings.Web.Small").image;
+            LoginButton = new GUIContent(" Generate Access Token", generateAccessTokenIcon);
+        }
     }
 
     private void OnGUI()
@@ -349,7 +357,11 @@ public class ExperienceEditor : EditorWindow
                 }
                 if (GUILayout.Button(RemoveAllButton))
                 {
-                    RemoveAllChapter();
+                    var isOkRemoveAllChapters = EditorUtility.DisplayDialog("Remove All Chapters", "Do you really want to remove all chapters ?", "Yes", "No");
+                    if (isOkRemoveAllChapters)
+                    {
+                        RemoveAllChapter();
+                    }
                 }
                 EditorGUILayout.EndHorizontal();
                 m_scrollPosition = GUILayout.BeginScrollView(m_scrollPosition, "ProgressBarBack", GUILayout.ExpandHeight(true), GUILayout.ExpandWidth(true));
@@ -393,6 +405,11 @@ public class ExperienceEditor : EditorWindow
         else
         {
             GUILayout.Label("You need to have a token to access the editor experience", EditorStyles.boldLabel);
+            if (GUILayout.Button(LoginButton, GUILayout.ExpandWidth(true)))
+            {
+                Close();
+                InversiveLoginWindow.Init();
+            }
         }
     }
 
@@ -446,7 +463,11 @@ public class ExperienceEditor : EditorWindow
                 }
                 if (GUILayout.Button(RemoveAllButton))
                 {
-                    RemoveAllAction(i);
+                    var isOkRemoveAllActions = EditorUtility.DisplayDialog("Remove All Actions", "Do you really want to remove all actions ?", "Yes", "No");
+                    if (isOkRemoveAllActions)
+                    {
+                        RemoveAllAction(i);
+                    }
                 }
                 EditorGUILayout.EndHorizontal();
                 DisplayActions(Experience.Chapters[i].Actions, i);
@@ -574,7 +595,7 @@ public class ExperienceEditor : EditorWindow
                     .ToArray())
                 .ToArray();
                 EditorGUI.BeginChangeCheck();
-                int selectedPreviousAction =  actions[i].PreviousAction != null && actionModels.Any(x => x.Id == actions[i].PreviousAction.Id) ? Array.IndexOf(actionModels, actionModels.First(x => x.Id == actions[i].PreviousAction.Id)) : 0;
+                int selectedPreviousAction = actions[i].PreviousAction != null && actionModels.Any(x => x.Id == actions[i].PreviousAction.Id) ? Array.IndexOf(actionModels, actionModels.First(x => x.Id == actions[i].PreviousAction.Id)) : 0;
                 selectedPreviousAction = EditorGUILayout.Popup("Previous action ?", selectedPreviousAction, actionModels.Select(x => x.Name).ToArray(), GUILayout.Width(300));
                 if (EditorGUI.EndChangeCheck())
                 {
@@ -686,7 +707,11 @@ public class ExperienceEditor : EditorWindow
                         }
                         if (GUILayout.Button(RemoveAllButton))
                         {
-                            RemoveAllRatingLevel(chapterIndex, i);
+                            var isOkRemoveAllRatingLevels = EditorUtility.DisplayDialog("Remove All Rating Levels", "Do you really want to remove all rating levels ?", "Yes", "No");
+                            if (isOkRemoveAllRatingLevels)
+                            {
+                                RemoveAllRatingLevel(chapterIndex, i);
+                            }
                         }
                         EditorGUILayout.EndHorizontal();
                         EditorGUILayout.BeginVertical("box");
@@ -753,7 +778,11 @@ public class ExperienceEditor : EditorWindow
                         }
                         if (GUILayout.Button(RemoveAllButton))
                         {
-                            RemoveAllValues(chapterIndex, i);
+                            var isOkRemoveAllValues = EditorUtility.DisplayDialog("Remove All Values", "Do you really want to remove all values ?", "Yes", "No");
+                            if (isOkRemoveAllValues)
+                            {
+                                RemoveAllValues(chapterIndex, i);
+                            }
                         }
                         EditorGUILayout.EndHorizontal();
                         EditorGUILayout.BeginVertical("box");
@@ -863,7 +892,7 @@ public class ExperienceEditor : EditorWindow
                                     }
                                 break;
                             case ActionResponseTypeEnum.RatingLevel:
-                                if(action.ExperienceActionRatingLevels.Any())
+                                if (action.ExperienceActionRatingLevels.Any())
                                     foreach (var val in action.ExperienceActionRatingLevels)
                                     {
                                         val.Id = action.ExperienceActionRatingLevels.IndexOf(val);
@@ -1068,7 +1097,7 @@ public class ExperienceEditor : EditorWindow
                     InversiveService.SetExperience(loadedModel);
                     InversiveService.SetExperienceHead(loadedModel);
                     Experience = loadedModel;
-                    foreach(var chapter in Experience.Chapters)
+                    foreach (var chapter in Experience.Chapters)
                         chapter.Actions = chapter.Actions.OrderBy(x => x.PreviousActionId).ToList();
                 }
                 else
