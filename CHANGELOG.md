@@ -2,6 +2,13 @@
 
 
 
+## 1.0.2
+
+- Merge branch 'main' of https://github.com/InversivePackages/inversive-sdk
+- Improvements on documentation for sdk features (share model, retrieve model, experience editor, get started). Resolved reported issues on sample scene. Add GetSaveJson() method to InversiveSdk class.
+- Update version to 1.0.1 in package.json and CHANGELOG.md
+
+
 ## 1.0.1
 
 - Resolved path issue on documentation's images
