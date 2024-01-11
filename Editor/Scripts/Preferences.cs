@@ -35,7 +35,7 @@ namespace InversiveSdkEditor
             return provider;
         }
 #else
-		[PreferenceItem( "Amplify Shader Editor" )]
+		[PreferenceItem( "Inversive SDK Editor" )]
 #endif
         public static void PreferencesGUI()
         {

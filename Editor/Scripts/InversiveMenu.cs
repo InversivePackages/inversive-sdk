@@ -20,23 +20,26 @@ public class InversiveMenu : EditorWindow
     private static readonly string changeLogfullPath = "Packages/com.inversive.inversive-sdk/CHANGELOG.md";
     private static readonly string packagefullPath = "Packages/com.inversive.inversive-sdk/package.json";
     private static readonly string ChangeLogGUID = "";
-    private static readonly string ResourcesGUID = "";
-    private static readonly string BuiltInGUID = "";
     private static readonly string InversiveIconPath = "Packages/com.inversive.inversive-sdk/Editor/UI/inversive-logo.png";
 
 
     public static readonly string ChangelogURL = new Uri(InversiveUtilities.GetApiUrl() + "dev/changelog/get-latest/").AbsoluteUri;
 
-    private static readonly string ManualURL = "https://github.com/InversivePackages/inversive-sdk/blob/main/Documentation/InstallationGuide.md";
-    private static readonly string BasicURL = "https://github.com/InversivePackages/inversive-sdk/blob/main/Documentation/CodeDocumentation.md";
-    private static readonly string BeginnerURL = "https://github.com/InversivePackages/inversive-sdk/blob/main/Documentation/GetStarted.md";
-    private static readonly string SiteURL = "";
-    private static readonly string StoreURL = "";
+    private static readonly string ManualURL = "https://github.com/InversivePackages/inversive-sdk/blob/main/Documentation/installation-guide.md";
+    private static readonly string BasicURL = "https://github.com/InversivePackages/inversive-sdk/blob/main/Documentation/code-documentation.md";
+    private static readonly string BeginnerURL = "https://github.com/InversivePackages/inversive-sdk/blob/main/Documentation/get-started.md";
+    private static readonly string TroubleshootingURL = "https://github.com/InversivePackages/inversive-sdk/blob/main/Documentation/troubleshooting.md";
+    private static readonly string GenerateAppIdUrl = "https://github.com/InversivePackages/inversive-sdk/blob/main/Documentation/generate-app-id.md";
+    private static readonly string ExperienceEditorUrl = "https://github.com/InversivePackages/inversive-sdk/blob/main/Documentation/experience-editor.md";
+    private static readonly string RetrieveModelUrl = "https://github.com/InversivePackages/inversive-sdk/blob/main/Documentation/retrieve-model.md";
+    private static readonly string ShareModelUrl = "https://github.com/InversivePackages/inversive-sdk/blob/main/Documentation/share-model.md";
+    private static readonly string DemoDocumentationUrl = "https://github.com/InversivePackages/inversive-sdk/blob/main/Documentation/demo-documentation.md";
+    private static readonly string SiteURL = "http://inversive.fr/";
+    private static readonly string StoreURL = "https://github.com/InversivePackages/inversive-sdk";
 
-    private static readonly GUIContent SamplesTitle = new GUIContent("Inversive Samples", "Import samples using our SDK");
-    private static readonly GUIContent ResourcesTitle = new GUIContent("Documentation", "Check the online wiki for various topics about how to use ASE with node examples and explanations");
+    private static readonly GUIContent ResourcesTitle = new GUIContent(" Documentation", "Check the online documentation");
     private static readonly GUIContent ManageTitle = new GUIContent("Actions", "");
-    private static readonly GUIContent UpdateTitle = new GUIContent("Latest Update", "Check the lastest additions, improvements and bug fixes done to ASE");
+    private static readonly GUIContent UpdateTitle = new GUIContent("Latest Update", "Check the lastest additions, improvements and bug fixes done to Inversive SDK");
     private static readonly GUIContent InversiveSDKEditorTitle = new GUIContent("Inversive SDK Editor", "Are you using the latest version? Now you know");
 
     Vector2 m_scrollPosition = Vector2.zero;
@@ -51,10 +54,15 @@ public class InversiveMenu : EditorWindow
     [NonSerialized]
     Texture experienceIcon = null;
 
-    GUIContent InversiveSamplesbutton = null;
     GUIContent Manualbutton = null;
     GUIContent Basicbutton = null;
     GUIContent Beginnerbutton = null;
+    GUIContent Troubleshootingbutton = null;
+    GUIContent GenerateAppIdButton = null;
+    GUIContent ExperienceEditorDocButton = null;
+    GUIContent RetrieveModelButton = null;
+    GUIContent ShareModelButton = null;
+    GUIContent DemoDocumentationButton = null;
 
     GUIContent LoginButton = null;
     GUIContent ExperienceEditorButton = null;
@@ -98,12 +106,17 @@ public class InversiveMenu : EditorWindow
             Manualbutton = new GUIContent(" Installation Guide", textIcon);
             Basicbutton = new GUIContent(" Code Documentation", textIcon);
             Beginnerbutton = new GUIContent(" Getting started", textIcon);
+            Troubleshootingbutton = new GUIContent(" Troubleshooting", textIcon);
+            GenerateAppIdButton = new GUIContent(" Generate App ID", textIcon);
+            ExperienceEditorDocButton = new GUIContent(" Experience Editor", textIcon);
+            RetrieveModelButton = new GUIContent(" Retrieve a model", textIcon);
+            ShareModelButton = new GUIContent(" Share a model", textIcon);
+            DemoDocumentationButton = new GUIContent(" Demo Documentation", textIcon);
         }
 
         if (packageIcon == null)
         {
             packageIcon = EditorGUIUtility.IconContent("BuildSettings.Editor.Small").image;
-            InversiveSamplesbutton = new GUIContent(" Inversive Samples", packageIcon);
         }
 
         if (experienceIcon == null)
@@ -221,12 +234,6 @@ public class InversiveMenu : EditorWindow
             // left column
             EditorGUILayout.BeginVertical(GUILayout.Width(175));
             {
-                GUILayout.Label(SamplesTitle, m_labelStyle);
-                if (GUILayout.Button(InversiveSamplesbutton, m_buttonStyle))
-                    ImportSample(InversiveSamplesbutton.text, BuiltInGUID);
-
-                GUILayout.Space(10);
-
                 GUILayout.Label(ResourcesTitle, m_labelStyle);
                 if (GUILayout.Button(Manualbutton, m_buttonStyle))
                     Application.OpenURL(ManualURL);
@@ -236,6 +243,24 @@ public class InversiveMenu : EditorWindow
 
                 if (GUILayout.Button(Basicbutton, m_buttonStyle))
                     Application.OpenURL(BasicURL);
+
+                if (GUILayout.Button(Troubleshootingbutton, m_buttonStyle))
+                    Application.OpenURL(TroubleshootingURL);
+
+                if (GUILayout.Button(GenerateAppIdButton, m_buttonStyle))
+                    Application.OpenURL(GenerateAppIdUrl);
+
+                if (GUILayout.Button(ExperienceEditorDocButton, m_buttonStyle))
+                    Application.OpenURL(ExperienceEditorUrl);
+
+                if (GUILayout.Button(RetrieveModelButton, m_buttonStyle))
+                    Application.OpenURL(RetrieveModelUrl);
+
+                if (GUILayout.Button(ShareModelButton, m_buttonStyle))
+                    Application.OpenURL(ShareModelUrl);
+
+                if (GUILayout.Button(DemoDocumentationButton, m_buttonStyle))
+                    Application.OpenURL(DemoDocumentationUrl);
             }
             EditorGUILayout.EndVertical();
 
@@ -328,15 +353,6 @@ public class InversiveMenu : EditorWindow
         }
         EditorGUILayout.EndHorizontal();
         Repaint();
-    }
-
-    private void ImportSample(string pipeline, string guid)
-    {
-        if (EditorUtility.DisplayDialog("Import Sample", "This will import the samples for" + pipeline.Replace(" Samples", "") + ", please make sure the pipeline is properly installed and/or selected before importing the samples.\n\nContinue?", "Yes", "No"))
-        {
-            AssetDatabase.ImportPackage(AssetDatabase.GUIDToAssetPath(ResourcesGUID), false);
-            AssetDatabase.ImportPackage(AssetDatabase.GUIDToAssetPath(guid), false);
-        }
     }
 
     UnityWebRequest www;

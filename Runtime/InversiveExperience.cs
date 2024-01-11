@@ -397,7 +397,7 @@ public class InversiveExperience
                                     ExperienceSessionActionSummaryModel summaryModel = JsonConvert.DeserializeObject<ExperienceSessionActionSummaryModel>(request.downloadHandler.text);
                                     GlobalScore = summaryModel.GlobalScore;
                                     DisplayedGlobalScore = InversiveUtilities.ReturnGlobalScore(summaryModel.GlobalScore, GetScoringType());
-                                    callback(int.Parse(request.downloadHandler.text));
+                                    callback(int.Parse(summaryModel.ActionScore.ToString()));
                                 }
                                 else
                                 {
