@@ -22,11 +22,11 @@ If you're working on a project using the INVERSIVE SDK and would like to retriev
 
 **Option 1**
 
-![Load Model App Id](./images/load-model-app-id.png "Load Model App Id Option 1"){ style="display: block; margin: 0 auto" }
+![Load Model App Id](./Images/load-model-app-id.png "Load Model App Id Option 1")
 
 **Option 2**
 
-![Load Model App Id Bis](./images/load-model-app-id-bis.png "Load Model App Id Option 2"){ style="display: block; margin: 0 auto" }
+![Load Model App Id Bis](./Images/load-model-app-id-bis.png "Load Model App Id Option 2")
 
 >[!IMPORTANT]
 >
@@ -36,7 +36,7 @@ If you're working on a project using the INVERSIVE SDK and would like to retriev
 
 You can retrieve an experience model by loading an existing json file (see [Exporting a model (Json)](./share-model.md)). To do this, go to the **Experience Editor** and click on the **Import Model** drop-down menu. In the **By Json File** section, click on **Browse** and enter your file. 
 
-![Load Model Json File](./images/load-model-json-file.png "Load Model Json File"){ style="display: block; margin: 0 auto" }
+![Load Model Json File](./Images/load-model-json-file.png "Load Model Json File")
 
 Finally, click on **Load Model** to load your experience model.
 
@@ -45,5 +45,5 @@ Finally, click on **Load Model** to load your experience model.
 >The loaded model will replace your current one. If you want to synchronize it with your app ID, don't forget to push your model.
 
 
-![Load Model Json File](./images/load-model-button.png "Load Model Json File"){ style="display: block; margin: 0 auto" }
+![Load Model Json File](./Images/load-model-button.png "Load Model Json File")
 

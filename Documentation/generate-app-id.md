@@ -11,7 +11,7 @@ This is a **mandatory step** for setting up the sdk in unity.
 
 When you open the experience editor, you should see "You need to have an app id to access the editor experience". To access the experience model editor, you need to generate an app id. 
 
-![Experience editor without app id](./images/experience-editor-without-appid.png "Experience editor without app id"){ style="display: block; margin: 0 auto" }
+![Experience editor without app id](./Images/experience-editor-without-appid.png "Experience editor without app id")
 
 ## How ?
 --- 
@@ -22,18 +22,16 @@ When you open the experience editor, you should see "You need to have an app id 
 
 To generate an app Id, click on **Generate App ID** from the InversiveSDK menu in your toolbar or from the main INVERSIVE SDK window. 
 
-![Inversive Sdk Toolbar](./images/inversivesdk-toolbar.png "Inversive Sdk Toolbar"){ style="display: block; margin: 0 auto" }
-
+![Inversive Sdk Toolbar](./Images/inversivesdk-toolbar.png "Inversive Sdk Toolbar")
 A login window should appear. Please enter your inversive platform user email and password.
 
-![Login](./images/login.png "Login"){ style="display: block; margin: 0 auto" }
+![Login](./Images/login.png "Login")
 
 After generating the app id by logging in, you should see the experience model editor.
 
 The generated **app Id** is associated with the **experience model**.
 
-![Experience editor with app id](./images/experience-editor-with-appid.png "Experience editor with app id"){ style="display: block; margin: 0 auto" }
-
+![Experience editor with app id](./Images/experience-editor-with-appid.png "Experience editor with app id")
 >[!IMPORTANT]
 >
 >If you have several user profiles (producer or administrator) available on the platform, it is mandatory  that you create/publish your experience with the user profile that generated the app ID. This app ID is associated with the creation of an experience on an account!

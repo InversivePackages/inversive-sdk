@@ -31,7 +31,7 @@ You have generated your app id by logging in and and imported your model via jso
 
 By importing the sample and opening the demo scene (Inversive SDK/Samples/Demo/Starter Assets/Scenes/DemoScene.unity), here's what you should get:
 
-![Unity layout](./images/layout-demo-scene.png "demo scene layout")
+![Unity layout](./Images/layout-demo-scene.png "demo scene layout")
 
 #### Interacting with SDK Features
 
