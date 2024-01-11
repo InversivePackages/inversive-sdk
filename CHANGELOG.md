@@ -2,6 +2,12 @@
 
 
 
+## 1.0.3
+
+- Resolved links issues in Inversive Home Menu. Resolved InversiveExperience error.
+- Update version to 1.0.2 in package.json and CHANGELOG.md
+
+
 ## 1.0.2
 
 - Merge branch 'main' of https://github.com/InversivePackages/inversive-sdk
