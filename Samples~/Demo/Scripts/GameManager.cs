@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using Inversive.SDK;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -34,7 +35,8 @@ public class GameManager : MonoBehaviour
         {
             Instance = this;
         }
-        //Initialize your sdk 
+
+        //Initialize your sdk & retrieve your session informations
         InversiveSdk.Init(this, (x) =>
         {
             Debug.Log($"Initialized & session Id : {x}");
@@ -72,7 +74,7 @@ public class GameManager : MonoBehaviour
 
     public void ResetGame()
     {
-        Application.LoadLevel(Application.loadedLevel);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void CheckAnswer()
@@ -87,10 +89,13 @@ public class GameManager : MonoBehaviour
             selectedAnswer.IsChecking = true;
             values.Add(selectedAnswer.gameObject.GetComponentInChildren<TMP_Text>().text);
         }
+
+        //Report that the action has been performed and retrieve the score for that action
         InversiveSdk.ExecuteAction(this, "FirstChapter", actionName, values, (score) =>
         {
             Debug.Log($"Action score : {score}");
         });
+
         foreach (var correctAnswer in level.correctAnswers)
             if (!selectedAnswers.Contains(correctAnswer))
             {
@@ -102,6 +107,7 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
+        //Signals that the session has been started
         InversiveSdk.StartExperience(this, (IsSuccess) =>
         {
             Debug.Log($"Started Experience succeed ? : {IsSuccess}");
@@ -131,6 +137,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            //Report session ended
             InversiveSdk.End(this, (IsSuccess) =>
             {
                 Debug.Log($"Ended Experience succeed ? : {IsSuccess}");
@@ -147,11 +154,12 @@ public class GameManager : MonoBehaviour
 
     public void Retry()
     {
+        //Resets session data to start from the beginning
         InversiveSdk.Retry(this, (x) =>
         {
             Debug.Log($"Retry Experience succeed ? : {x}");
         });
-        Application.LoadLevel(Application.loadedLevel);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
 

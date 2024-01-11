@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class InversiveUtilities
@@ -10,196 +8,12 @@ public class InversiveUtilities
     private const string _ApiUrl = "https://sdk.vrcxp.com/";
 
     public static string GetApiUrl() { return _ApiUrl; }
-
-    public static string Message(string message) { return $"{TAG} : {message}"; }
-
-    private static ExperienceModel ExperienceModel
-    {
-        get { return InversiveService.GetExperience(); }
-    }
-
-    public static int? CalculateScore(ExperienceChapterModel chapter, ExperienceActionModel action, List<string> value)
-    {
-        int? score = null;
-        var parseResult = TryParseActionTypeToValue(action.ActionType, value);
-        if (parseResult.result == null)
-        {
-            Debug.LogError(Message(parseResult.errorMessage));
-        }
-
-        var actionValues = parseResult.result;
-
-        switch (action.ActionResponseTypeEnum)
-        {
-            case ActionResponseTypeEnum.Unique:
-                var unique = action;
-                if (unique != null)
-                {
-                    if (actionValues is List<bool> boolValue)
-                        score = boolValue.First() == bool.Parse(unique.UniqueGoodAnswer) ? 100 : unique.WrongUniqueAnswerScore;
-                    else if (actionValues is List<float> floatValue)
-                        score = floatValue.First() == float.Parse(unique.UniqueGoodAnswer) ? 100 : unique.WrongUniqueAnswerScore;
-                    else if (actionValues is List<int> intValue)
-                        score = intValue.First() == int.Parse(unique.UniqueGoodAnswer) ? 100 : unique.WrongUniqueAnswerScore;
-                    else if (actionValues is List<string> stringValue)
-                        score = stringValue.First() == unique.UniqueGoodAnswer ? 100 : unique.WrongUniqueAnswerScore;
-                }
-                break;
-            case ActionResponseTypeEnum.Interval:
-                var interval = action;
-                if (interval != null)
-                {
-                    if (actionValues is List<float> floatValue)
-                    {
-                        if (float.TryParse(interval.MinScoreNegativeResponse, out var borneMin) &&
-                        float.TryParse(interval.MinScorePositiveResponse, out var borneSup) &&
-                        float.TryParse(interval.MaxScoreResponse, out var centerValue))
-                            score = CalculateIntervalNote(borneSup, borneMin, centerValue, floatValue.First());
-
-                    }
-                    else if (actionValues is List<int> intValue)
-                    {
-                        if (int.TryParse(interval.MinScoreNegativeResponse, out var borneMin) &&
-                        int.TryParse(interval.MinScorePositiveResponse, out var borneSup) &&
-                        int.TryParse(interval.MaxScoreResponse, out var centerValue))
-                            score = CalculateIntervalNote(borneSup, borneMin, centerValue, intValue.First());
-                    }
-                }
-                break;
-            case ActionResponseTypeEnum.MultipleValues:
-                var values = action.MultipleValues;
-                if (values != null)
-                {
-                    if (actionValues is List<bool> boolValue)
-                        score = boolValue.SelectMany(b => values.Where(x =>
-                        {
-                            if (bool.TryParse(x.GivenResponse, out var e))
-                                return e == b;
-                            return false;
-                        }).Select(x => x.Score)).Sum();
-                    else if (actionValues is List<float> floatValue)
-                        score = floatValue.SelectMany(b => values.Where(x =>
-                        {
-                            if (float.TryParse(x.GivenResponse, out var e))
-                                return e == b;
-                            return false;
-                        }).Select(x => x.Score)).Sum();
-                    else if (actionValues is List<int> intValue)
-                        score = intValue.SelectMany(b => values.Where(x =>
-                        {
-                            if (int.TryParse(x.GivenResponse, out var e))
-                                return e == b;
-                            return false;
-                        }).Select(x => x.Score)).Sum();
-                    else if (actionValues is List<string> stringValue)
-                        score = stringValue.SelectMany(b => values.Where(x => x.GivenResponse == b).Select(x => x.Score)).Sum();
-                }
-                break;
-            case ActionResponseTypeEnum.RatingLevel:
-                var ratingLevels = action.ExperienceActionRatingLevels;
-                if (ratingLevels != null)
-                {
-                    if (actionValues is List<float> floatValue)
-                    {
-                        score = ratingLevels.Any(x => float.TryParse(x.LowerLimit, out var lowerLimit) && float.TryParse(x.UpperLimit, out var upperLimit)
-                        && floatValue.First() >= lowerLimit && floatValue.First() <= upperLimit)
-                        ? ratingLevels.First(x => float.TryParse(x.LowerLimit, out var lowerLimit) && float.TryParse(x.UpperLimit, out var upperLimit)
-                        && floatValue.First() >= lowerLimit && floatValue.First() <= upperLimit).GivenScore : 0;
-                    }
-                    else if (actionValues is List<int> intValue)
-                    {
-                        score = ratingLevels.Any(x => int.TryParse(x.LowerLimit, out var lowerLimit) && int.TryParse(x.UpperLimit, out var upperLimit)
-                        && intValue.First() >= lowerLimit && intValue.First() <= upperLimit)
-                        ? ratingLevels.First(x => int.TryParse(x.LowerLimit, out var lowerLimit) && int.TryParse(x.UpperLimit, out var upperLimit)
-                        && intValue.First() >= lowerLimit && intValue.First() <= upperLimit).GivenScore : 0;
-                    }
-                }
-                break;
-        }
-
-        return score;
-    }
-
-    public static int CalculateIntervalNote(object ymax, object ymin, object y, object x)
-    {
-        double ymaxVal = Convert.ToDouble(ymax);
-        double yminVal = Convert.ToDouble(ymin);
-        double yVal = Convert.ToDouble(y);
-        double xVal = Convert.ToDouble(x);
-
-        if (xVal == yVal)
-        {
-            return 100;
-        }
-        else if (xVal < yminVal || xVal > ymaxVal)
-        {
-            return 0;
-        }
-        else
-        {
-            double distance = Math.Abs(xVal - yVal);
-            double intervalSize = Math.Abs(ymaxVal - yminVal);
-            double score = (1 - (distance / intervalSize)) * 100;
-            return (int)score;
-        }
-    }
-
-    public static (object result, string errorMessage) TryParseActionTypeToValue(ActionTypeEnum actionType, List<string> values)
-    {
-        switch (actionType)
-        {
-            case ActionTypeEnum.Boolean:
-                List<bool> boolResults = new List<bool>();
-                foreach (string value in values)
-                {
-                    if (bool.TryParse(value, out bool boolResult))
-                    {
-                        boolResults.Add(boolResult);
-                    }
-                    else
-                    {
-                        return (null, $"Failed to parse value '{value}' to boolean");
-                    }
-                }
-                return (boolResults, "");
-
-            case ActionTypeEnum.String:
-                return (values, "");
-
-            case ActionTypeEnum.Float:
-                List<float> floatResults = new List<float>();
-                foreach (string value in values)
-                {
-                    if (float.TryParse(value, out float floatResult))
-                    {
-                        floatResults.Add(floatResult);
-                    }
-                    else
-                    {
-                        return (null, $"Failed to parse value '{value}' to float");
-                    }
-                }
-                return (floatResults, "");
-
-            case ActionTypeEnum.Integer:
-                List<int> intResults = new List<int>();
-                foreach (string value in values)
-                {
-                    if (int.TryParse(value, out int intResult))
-                    {
-                        intResults.Add(intResult);
-                    }
-                    else
-                    {
-                        return (null, $"Failed to parse value '{value}' to integer");
-                    }
-                }
-                return (intResults, "");
-
-            default:
-                return (null, $"Unsupported Type : This is not a {actionType}");
-        }
-    }
+    public static string Message(string message) { return $"{TAG} - Message :\n {message}"; }
+    public static string NotFoundMessage(string message) { return $"{TAG} - 003 Not Found :\n {message}"; }
+    public static string CallFailedMessage(string message) { return $"{TAG} - 005 Calling Api Failed :\n {message}"; }
+    public static string ParsingFailedMessage(string message) { return $"{TAG} - 007 Unprocessable Entity :\n {message}"; }
+    public static string ValidationFailedMessage(string message) { return $"{TAG} - 011 Experience Model Validation failed :\n {message}"; }
+    public static string SuccessMessage(string message) { return $"{TAG} - 002 Success :\n {message}"; }
 
     private static (object result, string errorMessage) TryParseActionTypeToValue(ActionTypeEnum actionType, string value)
     {
@@ -231,7 +45,7 @@ public class InversiveUtilities
         bool result = true;
         if (model == null)
         {
-            Debug.LogError(Message("Experience model is not assigned!"));
+            Debug.LogError(ValidationFailedMessage("Experience model is not assigned !"));
             result = false;
             return result;
         }
@@ -246,7 +60,7 @@ public class InversiveUtilities
             {
                 if (chapterNames.Contains(chapter.Name))
                 {
-                    Debug.LogError(Message($"Duplicate chapter name found: {chapter.Name}"));
+                    Debug.LogError(ValidationFailedMessage($"Duplicate chapter name found: {chapter.Name}"));
                     result = false;
                 }
                 else
@@ -254,14 +68,14 @@ public class InversiveUtilities
             }
             else
             {
-                Debug.LogError(Message($"Chapter name cannot be null !"));
+                Debug.LogError(ValidationFailedMessage($"Chapter name cannot be null !"));
                 result = false;
             }
 
 
             if (chapterOrders.Contains(chapter.Order))
             {
-                Debug.LogError(Message($"Duplicate chapter order found: {chapter.Order}"));
+                Debug.LogError(ValidationFailedMessage($"Duplicate chapter order found: {chapter.Order}"));
                 result = false;
             }
             else
@@ -273,7 +87,7 @@ public class InversiveUtilities
                 {
                     if (actionNames.Contains(action.Name))
                     {
-                        Debug.LogError(Message($"Chapter : {chapter.Name}, Duplicate action name found: {action.Name}"));
+                        Debug.LogError(ValidationFailedMessage($"Chapter : {chapter.Name}, Duplicate action name found: {action.Name}"));
                         result = false;
                     }
                     else
@@ -281,7 +95,7 @@ public class InversiveUtilities
                 }
                 else
                 {
-                    Debug.LogError(Message($"Action name cannot be null !"));
+                    Debug.LogError(ValidationFailedMessage($"Action name cannot be null !"));
                     result = false;
                 }
 
@@ -290,7 +104,7 @@ public class InversiveUtilities
                     case ActionResponseTypeEnum.Unique:
                         if (string.IsNullOrEmpty(action.UniqueGoodAnswer))
                         {
-                            Debug.LogError(Message($"Chapter : {chapter.Name} - Action : {action.Name}, Unique Answer must not be null!"));
+                            Debug.LogError(ValidationFailedMessage($"Chapter : {chapter.Name} - Action : {action.Name}, Unique Answer must not be null!"));
                             result = false;
                         }
                         object uniqueReponse;
@@ -301,7 +115,7 @@ public class InversiveUtilities
                     case ActionResponseTypeEnum.MultipleValues:
                         if (action.MultipleValues.Count == 0)
                         {
-                            Debug.LogError(Message($"Chapter : {chapter.Name} - Action : {action.Name}, Multiple Values List must not be empty!"));
+                            Debug.LogError(ValidationFailedMessage($"Chapter : {chapter.Name} - Action : {action.Name}, Multiple Values List must not be empty!"));
                             result = false;
                         }
                         else
@@ -310,7 +124,7 @@ public class InversiveUtilities
                             {
                                 if (string.IsNullOrEmpty(value.GivenResponse))
                                 {
-                                    Debug.LogError(Message($"Chapter : {chapter.Name} - Action : {action.Name}, Value {value.Id} Given Response must not be null!"));
+                                    Debug.LogError(ValidationFailedMessage($"Chapter : {chapter.Name} - Action : {action.Name}, Value {value.Id} Given Response must not be null!"));
                                     result = false;
                                 }
                                 object givenResponse;
@@ -323,7 +137,7 @@ public class InversiveUtilities
                     case ActionResponseTypeEnum.Interval:
                         if (string.IsNullOrEmpty(action.MaxScoreResponse))
                         {
-                            Debug.LogError(Message($"Chapter : {chapter.Name} - Action : {action.Name}, Expected Value must not be null!"));
+                            Debug.LogError(ValidationFailedMessage($"Chapter : {chapter.Name} - Action : {action.Name}, Expected Value must not be null!"));
                             result = false;
                         }
                         object expectedValue;
@@ -332,7 +146,7 @@ public class InversiveUtilities
                             result = false;
                         if (string.IsNullOrEmpty(action.MinScorePositiveResponse))
                         {
-                            Debug.LogError(Message($"Chapter : {chapter.Name} - Action : {action.Name}, Maximum Value must not be null!"));
+                            Debug.LogError(ValidationFailedMessage($"Chapter : {chapter.Name} - Action : {action.Name}, Maximum Value must not be null!"));
                             result = false;
                         }
                         object maxVal;
@@ -341,7 +155,7 @@ public class InversiveUtilities
                             result = false;
                         if (string.IsNullOrEmpty(action.MinScoreNegativeResponse))
                         {
-                            Debug.LogError(Message($"Chapter : {chapter.Name} - Action : {action.Name}, Minimum Value must not be null!"));
+                            Debug.LogError(ValidationFailedMessage($"Chapter : {chapter.Name} - Action : {action.Name}, Minimum Value must not be null!"));
                             result = false;
                         }
                         object minVal;
@@ -350,14 +164,14 @@ public class InversiveUtilities
                             result = false;
                         if (!IsMinUnderMax(chapter.Name, action.MinScoreNegativeResponse, action.MinScorePositiveResponse, action))
                         {
-                            Debug.LogError(Message($"Chapter : {chapter.Name} - Action : {action.Name},  Minimum value must be lower than the Maximum value"));
+                            Debug.LogError(ValidationFailedMessage($"Chapter : {chapter.Name} - Action : {action.Name},  Minimum value must be lower than the Maximum value"));
                             result = false;
                         }
                         break;
                     case ActionResponseTypeEnum.RatingLevel:
                         if (action.ExperienceActionRatingLevels.Count == 0)
                         {
-                            Debug.LogError(Message($"Chapter : {chapter.Name} - Action : {action.Name}, Rating Level List must not be empty!"));
+                            Debug.LogError(ValidationFailedMessage($"Chapter : {chapter.Name} - Action : {action.Name}, Rating Level List must not be empty!"));
                             result = false;
                         }
                         else
@@ -366,7 +180,7 @@ public class InversiveUtilities
                             {
                                 if (string.IsNullOrEmpty(ratingLevel.LowerLimit))
                                 {
-                                    Debug.LogError(Message($"Chapter : {chapter.Name} - Action : {action.Name}, Rating Level {ratingLevel.Id} Lower Limit must not be null!"));
+                                    Debug.LogError(ValidationFailedMessage($"Chapter : {chapter.Name} - Action : {action.Name}, Rating Level {ratingLevel.Id} Lower Limit must not be null!"));
                                     result = false;
                                 }
                                 object lowerLimit;
@@ -375,7 +189,7 @@ public class InversiveUtilities
                                     result = false;
                                 if (string.IsNullOrEmpty(ratingLevel.UpperLimit))
                                 {
-                                    Debug.LogError(Message($"Chapter : {chapter.Name} - Action : {action.Name}, Rating Level {ratingLevel.Id} Upper Limit must not be null!"));
+                                    Debug.LogError(ValidationFailedMessage($"Chapter : {chapter.Name} - Action : {action.Name}, Rating Level {ratingLevel.Id} Upper Limit must not be null!"));
                                     result = false;
                                 }
                                 object upperLimit;
@@ -385,7 +199,7 @@ public class InversiveUtilities
 
                                 if (!IsMinUnderMax(chapter.Name, ratingLevel.LowerLimit, ratingLevel.UpperLimit, action))
                                 {
-                                    Debug.LogError(Message($"Chapter : {chapter.Name} - Action : {action.Name},  Rating Level {ratingLevel.Id} Lower limit must be lower than the Upper limit"));
+                                    Debug.LogError(ValidationFailedMessage($"Chapter : {chapter.Name} - Action : {action.Name},  Rating Level {ratingLevel.Id} Lower limit must be lower than the Upper limit"));
                                     result = false;
                                 }
 
@@ -403,7 +217,7 @@ public class InversiveUtilities
         var parseResult = TryParseActionTypeToValue(action.ActionType, value);
         if (parseResult.result == null)
         {
-            Debug.LogError(Message($"Chapter : {chapterName} - Action : {action.Name}, {parseResult.errorMessage} | Value type must be {action.ActionType}"));
+            Debug.LogError(ParsingFailedMessage($"Chapter : {chapterName} - Action : {action.Name}, {parseResult.errorMessage} | Value type must be {action.ActionType}"));
             result = null;
             return false;
         }
@@ -449,12 +263,19 @@ public class InversiveUtilities
     {
         var gradeMap = new Dictionary<int, string>
         {
-            { 90, "A" },
-            { 80, "B" },
-            { 70, "C" },
-            { 60, "D" },
-            { 50, "E" },
-            { 0, "F" }
+            { 75, "A+" },
+            { 70, "A" },
+            { 65, "A-" },
+            { 60, "B+" },
+            { 55, "B" },
+            { 50, "B-" },
+            { 45, "C+" },
+            { 40, "C" },
+            { 35, "C-" },
+            { 30, "D+" },
+            { 25, "D" },
+            { 20, "D-" },
+            { 15, "F" }
         };
 
         switch (scoring)

@@ -15,10 +15,10 @@ public class InversiveLoginWindow : EditorWindow
     private bool LoginFailed = false;
     private GUIStyle redLabelStyle;
 
-    [MenuItem("InversiveSDK/Generate Access Token", false, 1999)]
+    [MenuItem("InversiveSDK/Generate App Id", false, 1999)]
     public static void Init()
     {
-        EditorWindow window = GetWindow<InversiveLoginWindow>("Access Token");
+        EditorWindow window = GetWindow<InversiveLoginWindow>("App Id");
         window.minSize = new Vector2(450, 300);
         window.maxSize = new Vector2(450, 300);
         window.Show();
@@ -59,7 +59,7 @@ public class InversiveLoginWindow : EditorWindow
         LoginModel.Password = EditorGUILayout.PasswordField(LoginModel.Password);
         GUILayout.Space(20);
 
-        if (GUILayout.Button("Login"))
+        if (GUILayout.Button("Login to generate app id"))
         {
             // Perform login validation here
             if (!string.IsNullOrEmpty(LoginModel.Email) && !string.IsNullOrEmpty(LoginModel.Password))

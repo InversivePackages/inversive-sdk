@@ -13,7 +13,9 @@ public class InversiveExperience
 
     private static int LastActionScore = 0;
 
-    private static string GlobalScore = string.Empty;
+    private static int GlobalScore = 0;
+
+    private static string DisplayedGlobalScore = string.Empty;
 
     private static ExperienceSessionModel ExperienceSession = null;
 
@@ -60,17 +62,15 @@ public class InversiveExperience
     /// <summary>
     /// Recovers the overall score achieved in the experience.
     /// The global score is bounded between 0 and 100.
-    /// Can be called after sending InversiveSdk.End().
-    /// /// </summary>
+    /// </summary>
     /// <returns>An int representing the global score.</returns>
     public static int GetGlobalScore()
     {
-        return ExperienceSummary.GlobalScore;
+        return GlobalScore;
     }
 
     /// <summary>
     /// Retrieves the global score with the specified scoring applied.
-    /// Can be called after sending InversiveSdk.End().
     /// </summary>
     /// <returns>
     /// If scoring type is 'Hundred', returns the GlobalScore as a string.
@@ -80,7 +80,7 @@ public class InversiveExperience
     /// </returns>
     public static string GetDisplayedGlobalScore()
     {
-        return ExperienceSummary.DisplayedGlobalScore;
+        return DisplayedGlobalScore;
     }
 
     /// <summary>
@@ -110,6 +110,17 @@ public class InversiveExperience
         return InversiveService.GetExperience().Chapters;
     }
 
+    /// <summary>
+    /// This method retrieves a JSON string that has been previously saved in the session.
+    /// </summary>
+    /// <returns>
+    /// A string containing the JSON data saved in the session.
+    /// </returns>
+    public static string GetSavedJson()
+    {
+        // Accesses the 'Json' property of the 'ExperienceSession' class to retrieve the saved JSON string.
+        return ExperienceSession.Json;
+    }
 
     #endregion
 
@@ -253,7 +264,7 @@ public class InversiveExperience
                 yield return request.SendWebRequest();
                 if (request.result != UnityWebRequest.Result.Success)
                 {
-                    Debug.LogError(InversiveUtilities.Message($"Generate session id failed : {request.error}"));
+                    Debug.LogError(InversiveUtilities.CallFailedMessage($"Generate session id failed : {request.error}"));
                     ExperienceSession = new ExperienceSessionModel()
                     {
                         Id = Guid.NewGuid().ToString()
@@ -262,7 +273,7 @@ public class InversiveExperience
                 }
                 else
                 {
-                    Debug.Log(InversiveUtilities.Message($"Generate session id successfully !"));
+                    Debug.Log(InversiveUtilities.SuccessMessage($"Generate session id successfully !"));
                     SessionId = request.downloadHandler.text;
                 }
             }
@@ -271,14 +282,10 @@ public class InversiveExperience
         SessionId = GetSessionId();
         Debug.Log(InversiveUtilities.Message($"Get Session Id  : {SessionId}"));
 #endif
-        if (InversiveService.GetExperienceSession() != null)
-        {
-            if (InversiveService.GetExperienceSession().Id == SessionId)
-            {
 
-            }
+        if (InversiveService.GetExperienceSession() != null)
             PlayerPrefs.DeleteKey("ExperienceSession");
-        }
+
         if (!string.IsNullOrEmpty(SessionId))
         {
             using (var request = UnityWebRequest.Get(GetUri($"Initialize?session={SessionId}")))
@@ -286,7 +293,7 @@ public class InversiveExperience
                 yield return request.SendWebRequest();
                 if (request.result != UnityWebRequest.Result.Success)
                 {
-                    Debug.LogError(InversiveUtilities.Message($"Initialize failed : {request.error}"));
+                    Debug.LogError(InversiveUtilities.CallFailedMessage($"Init() Failed : {request.error}"));
                     ExperienceSession = new ExperienceSessionModel()
                     {
                         Id = Guid.NewGuid().ToString()
@@ -295,7 +302,7 @@ public class InversiveExperience
                 }
                 else
                 {
-                    Debug.Log(InversiveUtilities.Message($"Initialized successfully !"));
+                    Debug.Log(InversiveUtilities.SuccessMessage($"Initialized successfully !"));
                     ExperienceSession = JsonConvert.DeserializeObject<ExperienceSessionModel>(request.downloadHandler.text);
 #if !UNITY_EDITOR
                         InversiveService.SetExperience(ExperienceSession.Experience);
@@ -304,14 +311,10 @@ public class InversiveExperience
                 }
             }
         }
-        if (ExperienceSession == null)
+        else
         {
-            ExperienceSession = new ExperienceSessionModel()
-            {
-                Id = Guid.NewGuid().ToString(),
-                ExperienceSessionActions = new()
-            };
-            callback(ExperienceSession.Id);
+            Debug.LogError(InversiveUtilities.CallFailedMessage($"Initialize() Failed : Session Id not found"));
+            callback(null);
         }
     }
 
@@ -330,15 +333,20 @@ public class InversiveExperience
                 yield return request.SendWebRequest();
                 if (request.result != UnityWebRequest.Result.Success)
                 {
-                    Debug.LogError(InversiveUtilities.Message($"Start failed :  {request.error}"));
+                    Debug.LogError(InversiveUtilities.CallFailedMessage($"Start() Failed :  {request.error}"));
                     callback(false);
                 }
                 else
                 {
-                    Debug.Log(InversiveUtilities.Message($"StartDate : {request.downloadHandler.text}"));
+                    Debug.Log(InversiveUtilities.SuccessMessage($"StartDate : {request.downloadHandler.text}"));
                     callback(true);
                 }
             }
+        }
+        else
+        {
+            Debug.LogError(InversiveUtilities.CallFailedMessage($"Start() Failed : Session Id not found"));
+            callback(false);
         }
     }
 
@@ -352,7 +360,6 @@ public class InversiveExperience
     /// <returns>An IEnumerator coroutine.</returns>
     public static IEnumerator ExecuteAction(string chapterName, string actionName, List<string> values, Action<int?> callback)
     {
-        int? score = null;
         if (ExperienceSession != null)
         {
 #if !UNITY_EDITOR
@@ -360,71 +367,64 @@ public class InversiveExperience
 #else
             var experienceModel = InversiveService.GetExperience();
 #endif
-            var chapter = experienceModel.Chapters.Where(x => x.Name == chapterName).FirstOrDefault();
-            var action = chapter.Actions.Where(x => x.Name == actionName).FirstOrDefault();
-            var newSessionAction = new ExperienceSessionActionModel()
+            if (experienceModel != null && experienceModel.Chapters.Count > 0)
             {
-                RelatedAction = action,
-                Values = values,
-                Score = 0
-            };
-            ExperienceSession.LastAction = action;
-            LastActionScore = newSessionAction.Score;
-            if (!string.IsNullOrEmpty(SessionId))
-            {
-                var data = JsonConvert.SerializeObject(newSessionAction);
-                using (var request = UnityWebRequest.Put(GetUri($"Action?session={SessionId}"), data))
+                var chapter = experienceModel.Chapters.Where(x => x.Name == chapterName).FirstOrDefault();
+                if (experienceModel.Chapters?.Where(x => x.Name == chapterName)?.FirstOrDefault() != null)
                 {
-                    request.method = "POST";
-                    request.SetRequestHeader("Content-Type", "application/json");
-                    yield return request.SendWebRequest();
-                    if (request.result == UnityWebRequest.Result.Success)
+                    if (chapter.Actions.Where(x => x.Name == actionName)?.FirstOrDefault() != null)
                     {
-                        Debug.Log(InversiveUtilities.Message("Execute action on remote successfully !"));
-                        callback(int.Parse(request.downloadHandler.text));
-                    }
-                    else
-                    {
-                        if (request.responseCode == 422)
-                            Debug.LogError(InversiveUtilities.Message($"UnprocessableEntity : {request.downloadHandler.text}"));
+                        var action = chapter.Actions.Where(x => x.Name == actionName).FirstOrDefault();
+                        var newSessionAction = new ExperienceSessionActionModel()
+                        {
+                            RelatedAction = action,
+                            Values = values,
+                            Score = 0
+                        };
+                        ExperienceSession.LastAction = action;
+                        LastActionScore = newSessionAction.Score;
+                        if (!string.IsNullOrEmpty(SessionId))
+                        {
+                            var data = JsonConvert.SerializeObject(newSessionAction);
+                            using (var request = UnityWebRequest.Put(GetUri($"Action?session={SessionId}"), data))
+                            {
+                                request.method = "POST";
+                                request.SetRequestHeader("Content-Type", "application/json");
+                                yield return request.SendWebRequest();
+                                if (request.result == UnityWebRequest.Result.Success)
+                                {
+                                    Debug.Log(InversiveUtilities.SuccessMessage("Execute action on remote successfully !"));
+                                    ExperienceSessionActionSummaryModel summaryModel = JsonConvert.DeserializeObject<ExperienceSessionActionSummaryModel>(request.downloadHandler.text);
+                                    GlobalScore = summaryModel.GlobalScore;
+                                    DisplayedGlobalScore = InversiveUtilities.ReturnGlobalScore(summaryModel.GlobalScore, GetScoringType());
+                                    callback(int.Parse(request.downloadHandler.text));
+                                }
+                                else
+                                {
+                                    if (request.responseCode == 422)
+                                        Debug.LogError(InversiveUtilities.ParsingFailedMessage($"ExecuteAction() Failed : {request.error} \n\n Message : {request.downloadHandler.text}"));
+                                    else
+                                        Debug.LogError(InversiveUtilities.CallFailedMessage($"ExecuteAction() Failed : {request.error} \n\n Message : {request.downloadHandler.text}"));
+                                }
+                            }
+                        }
                         else
                         {
-                            Debug.LogError(InversiveUtilities.Message($"Execute Action Failed : {request.error}"));
-                            Debug.LogError(InversiveUtilities.Message($"Execute Action Failed Message: {request.downloadHandler.text}"));
-                            score = InversiveUtilities.CalculateScore(chapter, action, values);
-                            if (score == null)
-                                Debug.LogError(InversiveUtilities.Message("Execute Action Failed : Unable to calculate the score"));
-                            else
-                            {
-                                newSessionAction.Score = InversiveUtilities.CalculateScore(chapter, action, values) ?? 0;
-                                if (ExperienceSession.ExperienceSessionActions != null)
-                                    ExperienceSession.ExperienceSessionActions.Add(newSessionAction);
-                                else
-                                    ExperienceSession.ExperienceSessionActions = new List<ExperienceSessionActionModel> { newSessionAction };
-                            }
-                            callback(score);
+                            Debug.LogError(InversiveUtilities.CallFailedMessage($"ExecuteAction() Failed :  Session Id not found"));
+                            callback(null);
                         }
                     }
+                    else
+                        Debug.LogError(InversiveUtilities.NotFoundMessage($"ExecuteAction() Failed : No actions named {actionName} exist in the {chapterName} chapter"));
                 }
+                else
+                    Debug.LogError(InversiveUtilities.NotFoundMessage($"ExecuteAction() Failedd : No chapters named {chapterName} found"));
             }
             else
-            {
-                score = InversiveUtilities.CalculateScore(chapter, action, values);
-                if (score == null)
-                    Debug.LogError(InversiveUtilities.Message("Execute Action Failed : Unable to calculate the score"));
-                else
-                {
-                    newSessionAction.Score = InversiveUtilities.CalculateScore(chapter, action, values) ?? 0;
-                    if (ExperienceSession.ExperienceSessionActions != null)
-                        ExperienceSession.ExperienceSessionActions.Add(newSessionAction);
-                    else
-                        ExperienceSession.ExperienceSessionActions = new List<ExperienceSessionActionModel> { newSessionAction };
-                    callback(score);
-                }
-            }
+                Debug.LogError(InversiveUtilities.NotFoundMessage($"ExecuteAction() Failed : No chapters found"));
         }
         else
-            Debug.LogError(InversiveUtilities.Message($"Execute Action Failed : No ExperienceSession found !"));
+            Debug.LogError(InversiveUtilities.NotFoundMessage($"ExecuteAction() Failed : No sessions found"));
     }
 
     /// <summary>
@@ -446,15 +446,20 @@ public class InversiveExperience
                 yield return request.SendWebRequest();
                 if (request.result == UnityWebRequest.Result.Success)
                 {
-                    Debug.Log(InversiveUtilities.Message("StartChapter : Data send successfully !"));
+                    Debug.Log(InversiveUtilities.SuccessMessage("StartChapter : Data send successfully !"));
                     callback(true);
                 }
                 else
                 {
-                    Debug.LogError(InversiveUtilities.Message($"StartChapter Failed : {request.error}"));
+                    Debug.LogError(InversiveUtilities.CallFailedMessage($"StartChapter() Failed : {request.error}"));
                     callback(false);
                 }
             }
+        }
+        else
+        {
+            Debug.LogError(InversiveUtilities.CallFailedMessage($"StartChapter() Failed : Session Id not found"));
+            callback(false);
         }
     }
 
@@ -478,12 +483,12 @@ public class InversiveExperience
 
                 if (request.result != UnityWebRequest.Result.Success)
                 {
-                    Debug.LogError(InversiveUtilities.Message($"End Failed : {request.error}"));
+                    Debug.LogError(InversiveUtilities.CallFailedMessage($"End() Failed : {request.error}"));
                     callback(false);
                 }
                 else
                 {
-                    Debug.Log(InversiveUtilities.Message("Ended successfully !"));
+                    Debug.Log(InversiveUtilities.SuccessMessage("Ended successfully !"));
                     ExperienceSessionSummaryModel summaryModel = JsonConvert.DeserializeObject<ExperienceSessionSummaryModel>(request.downloadHandler.text);
                     ExperienceSummary = summaryModel;
                     callback(true);
@@ -492,15 +497,10 @@ public class InversiveExperience
         }
         else
         {
-            var globalScore = ExperienceSession.ExperienceSessionActions.Sum(x => x.Score);
-            ExperienceSummary = new ExperienceSessionSummaryModel()
-            {
-                WinScore = GetWinScore(),
-                GlobalScore = globalScore,
-                DisplayedGlobalScore = InversiveUtilities.ReturnGlobalScore(globalScore, GetScoringType())
-            };
-            callback(true);
+            Debug.LogError(InversiveUtilities.CallFailedMessage($"End() Failed : Session Id not found"));
+            callback(false);
         }
+
     }
 
     /// <summary>
@@ -519,17 +519,22 @@ public class InversiveExperience
                 yield return request.SendWebRequest();
                 if (request.result != UnityWebRequest.Result.Success)
                 {
-                    Debug.LogError(InversiveUtilities.Message($"Retry Failed : {request.error}"));
+                    Debug.LogError(InversiveUtilities.CallFailedMessage($"Retry() Failed : {request.error}"));
                     callback(false);
                 }
                 else
                 {
-                    Debug.Log(InversiveUtilities.Message($"Retry Launched successfully !"));
+                    Debug.Log(InversiveUtilities.SuccessMessage($"Retry Launched successfully !"));
                     ExperienceSession = JsonConvert.DeserializeObject<ExperienceSessionModel>(request.downloadHandler.text);
                     InversiveService.SetExperience(ExperienceSession.Experience);
                     callback(true);
                 }
             }
+        }
+        else
+        {
+            Debug.LogError(InversiveUtilities.CallFailedMessage($"Retry() Failed : Session Id not found"));
+            callback(false);
         }
     }
 
@@ -551,15 +556,20 @@ public class InversiveExperience
 
                 if (request.result != UnityWebRequest.Result.Success)
                 {
-                    Debug.LogError(InversiveUtilities.Message($"Close Failed : {request.error}"));
+                    Debug.LogError(InversiveUtilities.CallFailedMessage($"Close() Failed : {request.error}"));
                     callback(false);
                 }
                 else
                 {
-                    Debug.Log(InversiveUtilities.Message($"Closed successfully !"));
+                    Debug.Log(InversiveUtilities.SuccessMessage($"Closed successfully !"));
                     callback(true);
                 }
             }
+        }
+        else
+        {
+            Debug.LogError(InversiveUtilities.CallFailedMessage($"Close() Failed : Session Id not found"));
+            callback(false);
         }
     }
 
@@ -582,19 +592,24 @@ public class InversiveExperience
                 yield return request.SendWebRequest();
                 if (request.result == UnityWebRequest.Result.Success)
                 {
-                    Debug.Log(InversiveUtilities.Message($"Save Json successfully !"));
+                    Debug.Log(InversiveUtilities.SuccessMessage($"Save Json successfully !"));
                     ExperienceSession.Json = json;
                     callback(ExperienceSession.Json);
                 }
                 else
                 {
-                    Debug.LogError(InversiveUtilities.Message($"Save Json Failed : {request.error}"));
+                    Debug.LogError(InversiveUtilities.CallFailedMessage($"SaveJson() Failed : {request.error}"));
                     callback(null);
                 }
             }
         }
+        else
+        {
+            Debug.LogError(InversiveUtilities.CallFailedMessage($"SaveJson() Failed : Session Id not found"));
+            callback(null);
+        }
     }
 
-#endregion
+    #endregion
 }
 

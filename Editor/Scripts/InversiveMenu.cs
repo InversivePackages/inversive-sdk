@@ -1,9 +1,7 @@
-using GluonGui.WorkspaceWindow.Views.WorkspaceExplorer;
 using InversiveSdkEditor;
 using System;
 using System.Collections;
 using System.IO;
-using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -350,7 +348,7 @@ public class InversiveMenu : EditorWindow
 #if UNITY_2017_2_OR_NEWER
             yield return www.SendWebRequest();
 #else
-            yield return www.Send();
+				yield return www.Send();
 #endif
 
             while (www.isDone == false)

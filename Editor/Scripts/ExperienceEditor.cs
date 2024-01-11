@@ -218,7 +218,7 @@ public class ExperienceEditor : EditorWindow
         if (generateAccessTokenIcon == null)
         {
             generateAccessTokenIcon = EditorGUIUtility.IconContent("BuildSettings.Web.Small").image;
-            LoginButton = new GUIContent(" Generate Access Token", generateAccessTokenIcon);
+            LoginButton = new GUIContent(" Generate App Id", generateAccessTokenIcon);
         }
     }
 
@@ -237,7 +237,7 @@ public class ExperienceEditor : EditorWindow
         {
             GUILayout.Space(4);
             EditorGUILayout.BeginVertical("box");
-            GUILayout.Label("By Access Token", EditorStyles.boldLabel);
+            GUILayout.Label("By App Id", EditorStyles.boldLabel);
             EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
             {
                 ImportJsonAccessToken = EditorGUILayout.TextField(ImportJsonAccessToken);
@@ -276,7 +276,7 @@ public class ExperienceEditor : EditorWindow
         GUILayout.Space(8);
         if (!string.IsNullOrEmpty(InversiveService.GetAccessToken()))
         {
-            GUILayout.Label("Access Token", EditorStyles.boldLabel);
+            GUILayout.Label("App Id", EditorStyles.boldLabel);
             GUILayout.Space(4);
             EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(false));
             {
@@ -404,7 +404,7 @@ public class ExperienceEditor : EditorWindow
         }
         else
         {
-            GUILayout.Label("You need to have a token to access the editor experience", EditorStyles.boldLabel);
+            GUILayout.Label("You need to have an app id to access the editor experience", EditorStyles.boldLabel);
             if (GUILayout.Button(LoginButton, GUILayout.ExpandWidth(true)))
             {
                 Close();

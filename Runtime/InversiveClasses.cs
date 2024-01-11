@@ -153,6 +153,13 @@ public class ExperienceChapterSummaryModel
 }
 
 [Serializable]
+public class ExperienceSessionActionSummaryModel
+{
+    public int GlobalScore { get; set; }
+    public int ActionScore { get; set; }
+}
+
+[Serializable]
 public class LoginModel
 {
     [field: SerializeField] public string ProductName { get; set; }

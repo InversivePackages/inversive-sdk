@@ -93,6 +93,18 @@ namespace Inversive.SDK
         }
 
 
+        /// <summary>
+        /// This method retrieves a JSON string that has been previously saved in the session.
+        /// </summary>
+        /// <returns>
+        /// A string containing the JSON data saved in the session.
+        /// </returns>
+        public static string GetSavedJson()
+        {
+            return InversiveExperience.GetSavedJson();
+        }
+
+
         #endregion
 
         #region Public Methods
