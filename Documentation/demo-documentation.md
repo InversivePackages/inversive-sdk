@@ -13,8 +13,8 @@ Before continuing with the sdk implementation demonstration via the demo scene, 
 >You must have follow the [Installation Guide](./InstallationGuide.md) and import the sample Inversive SDK Starter Assets.
 
 1. ⚠️ You must have **generated an app id** for your unity project. (see how [Generate an App Id](#generate-app-id))
-2. ⚠️ In the experience editor, you must have **loaded** the template json file carried with the Sample (*Inversive SDK/Samples/Demo/ExperienceModelToImport.json*). (see how [Load sample json model](#load-json-model))
-3. ⚠️ In the experience editor, **after importing your model** , you must have **Push Model** to update the remote model stored by our platform. (see how [Push Model](#push-model))
+2. ⚠️ In the experience editor, you must have **loaded** the template json file carried with the Sample (*Inversive SDK/Samples/Demo/ExperienceModelToImport.json*). (see how [Load sample json model](./retrieve-model.md#loading-a-model-via-a-json-file)
+3. ⚠️ In the experience editor, **after importing your model** , you must have **Push Model** to update the remote model stored by our platform. (see how [Push Model](./share-model.md#pushing-a-model))
 
 ### Usage
 
@@ -115,6 +115,6 @@ Here are sample implementations of the Inversive SDK methods Init(), StartExperi
 
 ### Troubleshooting
 
-Inversive SDK is a new tool, but encountering issues during usage is possible. You can go to the troubleshooting section where there are some common problems you might face and how to resolve them : [Troubleshooting](./Troubleshooting.md)
+Inversive SDK is a new tool, but encountering issues during usage is possible. You can go to the troubleshooting section where there are some common problems you might face and how to resolve them : [Troubleshooting](./troubleshooting.md)
 
 

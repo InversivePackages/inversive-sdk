@@ -171,4 +171,4 @@ The application provides a lot of features. They are documented below.
 
 ### Troubleshooting
 
-Inversive SDK is a new tool, but encountering issues during usage is possible. You can go to the troubleshooting section where there are some common problems you might face and how to resolve them : [Troubleshooting](./Troubleshooting.md)
+Inversive SDK is a new tool, but encountering issues during usage is possible. You can go to the troubleshooting section where there are some common problems you might face and how to resolve them : [Troubleshooting](./troubleshooting.md)

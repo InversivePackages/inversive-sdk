@@ -23,7 +23,7 @@ Once done, a window should appear to confirm that your model has been saved on o
 
 >[!NOTE]
 >
->Other developers can then load the model using the app ID of this experience (see [Loading a model via app ID](./retrieve-model.md)).
+>Other developers can then load the model using the app ID of this experience (see [Loading a model via app ID](./retrieve-model.md#load-a-model-via-app-id)).
 
 ### Export a model (Json)
 
@@ -35,10 +35,10 @@ To share your model with other developers, you can extract it into a json file. 
 
 ![Export Model](./Images/export-model.png "Export Model")
 
-You'll find your model in your project's **"Assets/Inversive SDK"** folder. Other developers will be able to load the model via this file (see [Loading a model via a json file](./retrieve-model.md)).
+You'll find your model in your project's **"Assets/Inversive SDK"** folder. Other developers will be able to load the model via this file (see [Loading a model via a json file](./retrieve-model.md#loading-a-model-via-a-json-file)).
 
 ![Export Model Succeeded](./Images/exported-successfully.png "Export Model Succeeded")
 
 >[!NOTE]
 >
->Other developers can then load the model using json file loading. (see [Loading a model via a json file](./retrieve-model.md)).
+>Other developers can then load the model using json file loading. (see [Loading a model via a json file](./retrieve-model.md#loading-a-model-via-a-json-file)).

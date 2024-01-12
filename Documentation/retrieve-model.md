@@ -1,4 +1,4 @@
-# Load a model
+# Retrieve a model
 
 >[!IMPORTANT]
 >
@@ -14,7 +14,7 @@ One of the main features of Inversive Sdk is the ability to **retrieve a model**
 
 ### Load a model via app ID
 
-If you're working on a project using the INVERSIVE SDK and would like to retrieve a model generated for your experience, you can retrieve a chaptering model via the app ID. To do this, go to the chapter editor (see [Experience Editor](./experience-editor.md)) and click on the **Import Model** drop-down menu, then enter the app ID in the field provided. You can also enter the app ID in the text field provided and click on **Update Model** to update the model with the latest pushed version (see [Pushing a model](./share-model.md)).
+If you're working on a project using the INVERSIVE SDK and would like to retrieve a model generated for your experience, you can retrieve a chaptering model via the app ID. To do this, go to the chapter editor (see [Experience Editor](./experience-editor.md)) and click on the **Import Model** drop-down menu, then enter the app ID in the field provided. You can also enter the app ID in the text field provided and click on **Update Model** to update the model with the latest pushed version (see [Pushing a model](./share-model.md#pushing-a-model)).
 
 >[!WARNING]
 >
@@ -34,7 +34,7 @@ If you're working on a project using the INVERSIVE SDK and would like to retriev
 
 ### Loading a model via a json file
 
-You can retrieve an experience model by loading an existing json file (see [Exporting a model (Json)](./share-model.md)). To do this, go to the **Experience Editor** and click on the **Import Model** drop-down menu. In the **By Json File** section, click on **Browse** and enter your file. 
+You can retrieve an experience model by loading an existing json file (see [Exporting a model (Json)](./share-model.md#export-a-model-json)). To do this, go to the **Experience Editor** and click on the **Import Model** drop-down menu. In the **By Json File** section, click on **Browse** and enter your file. 
 
 ![Load Model Json File](./Images/load-model-json-file.png "Load Model Json File")
 
