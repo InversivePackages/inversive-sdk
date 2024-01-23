@@ -1,6 +1,6 @@
 {
   "name": "com.inversive.inversive-sdk",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "displayName": "Inversive SDK",
   "description": "Our Unity SDK empowers developers to seamlessly integrate our API into their games, allowing users to navigate game sequences organized into immersive 'chapters,' each with its unique set of actions. Additionally, our SDK facilitates effortless data uploading to your dedicated back office, ensuring efficient management of user information within the inversive environment.",
   "unity": "2019.1",

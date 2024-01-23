@@ -2,6 +2,12 @@
 
 
 
+## 1.0.5
+
+- Change route in Init()
+- Update version to 1.0.4 in package.json and CHANGELOG.md
+
+
 ## 1.0.4
 
 - Resolved links issues.
