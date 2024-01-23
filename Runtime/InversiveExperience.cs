@@ -258,13 +258,13 @@ public class InversiveExperience
 #if UNITY_EDITOR
         if (string.IsNullOrEmpty(SessionId))
         {
-            using (var request = UnityWebRequest.Get(GetUri($"Account/generate-session-id")))
+            using (var request = UnityWebRequest.Get(GetUri($"Account/get-session")))
             {
                 request.SetRequestHeader("AccessToken", InversiveService.GetAccessToken());
                 yield return request.SendWebRequest();
                 if (request.result != UnityWebRequest.Result.Success)
                 {
-                    Debug.LogError(InversiveUtilities.CallFailedMessage($"Generate session id failed : {request.error}"));
+                    Debug.LogError(InversiveUtilities.CallFailedMessage($"Retrieved session id failed : {request.error}"));
                     ExperienceSession = new ExperienceSessionModel()
                     {
                         Id = Guid.NewGuid().ToString()
@@ -273,7 +273,7 @@ public class InversiveExperience
                 }
                 else
                 {
-                    Debug.Log(InversiveUtilities.SuccessMessage($"Generate session id successfully !"));
+                    Debug.Log(InversiveUtilities.SuccessMessage($"Retrieved session id successfully !"));
                     SessionId = request.downloadHandler.text;
                 }
             }

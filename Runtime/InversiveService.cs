@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class InversiveService
 {
-                                                       
+
     private static string AccessToken;
 
     public static void SetAccessToken(string sessionId)
