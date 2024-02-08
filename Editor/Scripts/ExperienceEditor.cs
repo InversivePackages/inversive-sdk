@@ -243,6 +243,7 @@ public class ExperienceEditor : EditorWindow
                 ImportJsonAccessToken = EditorGUILayout.TextField(ImportJsonAccessToken);
                 if (GUILayout.Button("Import Model"))
                 {
+                    InversiveService.SetAccessToken(ImportJsonAccessToken);
                     EditorCoroutineUtility.StartCoroutine(GetExperienceHead(), this);
                 }
             }

@@ -304,9 +304,6 @@ public class InversiveExperience
                 {
                     Debug.Log(InversiveUtilities.SuccessMessage($"Initialized successfully !"));
                     ExperienceSession = JsonConvert.DeserializeObject<ExperienceSessionModel>(request.downloadHandler.text);
-#if !UNITY_EDITOR
-                        InversiveService.SetExperience(ExperienceSession.Experience);
-#endif
                     callback(ExperienceSession.Id);
                 }
             }
@@ -362,11 +359,8 @@ public class InversiveExperience
     {
         if (ExperienceSession != null)
         {
-#if !UNITY_EDITOR
             var experienceModel = ExperienceSession.Experience;
-#else
-            var experienceModel = InversiveService.GetExperience();
-#endif
+
             if (experienceModel != null && experienceModel.Chapters.Count > 0)
             {
                 var chapter = experienceModel.Chapters.Where(x => x.Name == chapterName).FirstOrDefault();
@@ -418,7 +412,7 @@ public class InversiveExperience
                         Debug.LogError(InversiveUtilities.NotFoundMessage($"ExecuteAction() Failed : No actions named {actionName} exist in the {chapterName} chapter"));
                 }
                 else
-                    Debug.LogError(InversiveUtilities.NotFoundMessage($"ExecuteAction() Failedd : No chapters named {chapterName} found"));
+                    Debug.LogError(InversiveUtilities.NotFoundMessage($"ExecuteAction() Failed : No chapters named {chapterName} found"));
             }
             else
                 Debug.LogError(InversiveUtilities.NotFoundMessage($"ExecuteAction() Failed : No chapters found"));
