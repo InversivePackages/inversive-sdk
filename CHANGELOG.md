@@ -2,6 +2,12 @@
 
 
 
+## 1.0.6
+
+- Fixed issues on import by app ID
+- Update version to 1.0.5 in package.json and CHANGELOG.md
+
+
 ## 1.0.5
 
 - Change route in Init()
