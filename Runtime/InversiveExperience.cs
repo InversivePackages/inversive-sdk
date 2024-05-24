@@ -38,7 +38,7 @@ public class InversiveExperience
     /// <returns>The scoring type as a ScoringEnum.</returns>
     public static ScoringEnum GetScoringType()
     {
-        return InversiveService.GetExperience().ScoringType;
+        return ExperienceSession?.Experience.ScoringType ?? ScoringEnum.AsIs;
     }
 
     /// <summary>
@@ -98,7 +98,7 @@ public class InversiveExperience
     /// <returns>The win score as an integer.</returns>
     public static int GetWinScore()
     {
-        return InversiveService.GetExperience().WinScore;
+        return ExperienceSession?.Experience?.WinScore ?? 0;
     }
 
     /// <summary>
@@ -107,7 +107,7 @@ public class InversiveExperience
     /// <returns>A list of ExperienceChapterModel objects.</returns>
     public static List<ExperienceChapterModel> GetChapters()
     {
-        return InversiveService.GetExperience().Chapters;
+        return ExperienceSession?.Experience?.Chapters ?? new List<ExperienceChapterModel>();
     }
 
     /// <summary>

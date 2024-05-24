@@ -1020,7 +1020,7 @@ public class ExperienceEditor : EditorWindow
                         newValue.GivenResponse = "True";
                         break;
                     case ActionTypeEnum.String:
-                        newValue.GivenResponse = "Veuillez saisir une réponse";
+                        newValue.GivenResponse = "Veuillez saisir une rï¿½ponse";
                         break;
                     case ActionTypeEnum.Float:
                         newValue.GivenResponse = "0,0";
@@ -1134,7 +1134,7 @@ public class ExperienceEditor : EditorWindow
         EditorCoroutineUtility.StartCoroutine(SaveExperienceModel(Experience, (x) =>
         {
             if (x.result != UnityWebRequest.Result.Success)
-                Debug.LogError(InversiveUtilities.Message("Save failed !"));
+                Debug.LogError(InversiveUtilities.Message($"Save failed ! : \n\n {x.error}"));
             else
             {
                 Debug.Log(InversiveUtilities.Message("Save succeed !"));
@@ -1256,7 +1256,7 @@ public class ExperienceEditor : EditorWindow
                     action.UniqueGoodAnswer = "True";
                     break;
                 case ActionTypeEnum.String:
-                    action.UniqueGoodAnswer = "Veuillez saisir une réponse";
+                    action.UniqueGoodAnswer = "Veuillez saisir une rï¿½ponse";
                     break;
                 case ActionTypeEnum.Float:
                     action.UniqueGoodAnswer = "0,0";
@@ -1294,7 +1294,7 @@ public class ExperienceEditor : EditorWindow
                             value.GivenResponse = "True";
                             break;
                         case ActionTypeEnum.String:
-                            value.GivenResponse = "Veuillez saisir une réponse";
+                            value.GivenResponse = "Veuillez saisir une rï¿½ponse";
                             break;
                         case ActionTypeEnum.Float:
                             value.GivenResponse = "0,0";
