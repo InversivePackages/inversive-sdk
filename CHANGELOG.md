@@ -2,6 +2,12 @@
 
 
 
+## 1.0.7
+
+- Add display error on Save Model FIxed GetChapters()
+- Update version to 1.0.6 in package.json and CHANGELOG.md
+
+
 ## 1.0.6
 
 - Fixed issues on import by app ID
