@@ -37,7 +37,7 @@ public class GameManager : MonoBehaviour
         }
 
         //Initialize your sdk & retrieve your session informations
-        InversiveSdk.Init(this, (x) =>
+        InversiveSdk.Init((x) =>
         {
             Debug.Log($"Initialized & session Id : {x}");
         });
@@ -91,7 +91,7 @@ public class GameManager : MonoBehaviour
         }
 
         //Report that the action has been performed and retrieve the score for that action
-        InversiveSdk.ExecuteAction(this, "FirstChapter", actionName, values, (score) =>
+        InversiveSdk.ExecuteAction("FirstChapter", actionName, values, (score) =>
         {
             Debug.Log($"Action score : {score}");
         });
@@ -108,7 +108,7 @@ public class GameManager : MonoBehaviour
     public void StartGame()
     {
         //Signals that the session has been started
-        InversiveSdk.StartExperience(this, (IsSuccess) =>
+        InversiveSdk.StartExperience((IsSuccess) =>
         {
             Debug.Log($"Started Experience succeed ? : {IsSuccess}");
         });
@@ -138,7 +138,7 @@ public class GameManager : MonoBehaviour
         else
         {
             //Report session ended
-            InversiveSdk.End(this, (IsSuccess) =>
+            InversiveSdk.End((IsSuccess) =>
             {
                 Debug.Log($"Ended Experience succeed ? : {IsSuccess}");
                 if (IsSuccess)
@@ -155,7 +155,7 @@ public class GameManager : MonoBehaviour
     public void Retry()
     {
         //Resets session data to start from the beginning
-        InversiveSdk.Retry(this, (x) =>
+        InversiveSdk.Retry((x) =>
         {
             Debug.Log($"Retry Experience succeed ? : {x}");
         });

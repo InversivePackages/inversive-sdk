@@ -1,21 +1,40 @@
 using Newtonsoft.Json;
+using System;
+using System.IO;
 using UnityEngine;
 
 public class InversiveService
 {
+    private static readonly string FilePath = Path.Combine(Application.dataPath, "Inversive SDK", "AccessToken.txt");
 
     private static string AccessToken;
 
-    public static void SetAccessToken(string sessionId)
+    public static void SetAccessToken(string appId)
     {
-        PlayerPrefs.SetString("AccessToken", sessionId);
-        AccessToken = sessionId;
+        try
+        {
+            File.WriteAllText(FilePath, appId);
+            AccessToken = appId;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Failed to write access token to file: {ex.Message}");
+        }
     }
 
     public static string GetAccessToken()
     {
-        if (string.IsNullOrEmpty(AccessToken))
-            AccessToken = PlayerPrefs.GetString("AccessToken", "");
+        try
+        {
+            if (File.Exists(FilePath))
+            {
+                AccessToken = File.ReadAllText(FilePath);
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Failed to read access token from file: {ex.Message}");
+        }
         return AccessToken;
     }
 

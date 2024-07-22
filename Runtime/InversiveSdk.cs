@@ -109,12 +109,15 @@ namespace Inversive.SDK
 
         #region Public Methods
 
+        #region Sdk Deprecated Methods
+
         /// <summary>
         /// Initializes the user session.
         /// Init() must be called before using anything else.
         /// </summary>
         /// <param name="monobehaviour">The MonoBehaviour instance to start the coroutine.</param>
         /// <param name="callback">Callback function invoked with the session ID upon successful initialization.</param>
+        [Obsolete("Init(MonoBehaviour monobehaviour ..) is deprecated. Use Init() without monobehaviour instead.")]
         public static void Init(MonoBehaviour monobehaviour, Action<string> callback)
         {
             monobehaviour.StartCoroutine(InversiveExperience.Init(x => callback(x)));
@@ -125,6 +128,7 @@ namespace Inversive.SDK
         /// </summary>
         /// <param name="monobehaviour">The MonoBehaviour instance to start the coroutine.</param>
         /// <param name="callback">Callback function invoked with a boolean indicating success or failure.</param>
+        [Obsolete("StartExperience(MonoBehaviour monobehaviour ..) is deprecated. Use StartExperience() without monobehaviour instead.")]
         public static void StartExperience(MonoBehaviour monobehaviour, Action<bool> callback)
         {
             monobehaviour.StartCoroutine(InversiveExperience.Start(x => callback(x)));
@@ -140,6 +144,7 @@ namespace Inversive.SDK
         /// <param name="actionName">Name of the action to be executed.</param>
         /// <param name="values">Values associated with the action. Sent as List of String</param>
         /// <param name="callback">Callback function invoked with the calculated score upon completion.</param>
+        [Obsolete("ExecuteAction(MonoBehaviour monobehaviour ..) is deprecated. Use ExecuteAction() without monobehaviour instead.")]
         public static void ExecuteAction(MonoBehaviour monobehaviour, string chapterName, string actionName, List<string> values, Action<int?> callback)
         {
             monobehaviour.StartCoroutine(InversiveExperience.ExecuteAction(chapterName, actionName, values, x => callback(x)));
@@ -151,6 +156,7 @@ namespace Inversive.SDK
         /// <param name="monobehaviour">The MonoBehaviour instance to start the coroutine.</param>
         /// <param name="chapterName">Name of the chapter to be started.</param>
         /// <param name="callback">Callback function invoked with a boolean indicating success or failure.</param>
+        [Obsolete("StartChapter(MonoBehaviour monobehaviour ..) is deprecated. Use StartChapter() without monobehaviour instead.")]
         public static void StartChapter(MonoBehaviour monobehaviour, string chapterName, Action<bool> callback)
         {
             monobehaviour.StartCoroutine(InversiveExperience.StartChapter(chapterName, x => callback(x)));
@@ -162,6 +168,7 @@ namespace Inversive.SDK
         /// </summary>
         /// <param name="monobehaviour">The MonoBehaviour instance to start the coroutine.</param>
         /// <param name="callback">Callback function invoked with a boolean indicating success or failure.</param>
+        [Obsolete("End(MonoBehaviour monobehaviour ..) is deprecated. Use End() without monobehaviour instead.")]
         public static void End(MonoBehaviour monobehaviour, Action<bool> callback)
         {
             monobehaviour.StartCoroutine(InversiveExperience.End(x => callback(x)));
@@ -172,6 +179,7 @@ namespace Inversive.SDK
         /// </summary>
         /// <param name="monobehaviour">The MonoBehaviour instance to start the coroutine.</param>
         /// <param name="callback">Callback function invoked with a boolean indicating success or failure.</param>
+        [Obsolete("Retry(MonoBehaviour monobehaviour ..) is deprecated. Use Retry() without monobehaviour instead.")]
         public static void Retry(MonoBehaviour monobehaviour, Action<bool> callback)
         {
             monobehaviour.StartCoroutine(InversiveExperience.Retry(x => callback(x)));
@@ -183,6 +191,7 @@ namespace Inversive.SDK
         /// </summary>
         /// <param name="monobehaviour">The MonoBehaviour instance to start the coroutine.</param>
         /// <param name="callback">Callback function invoked with a boolean indicating success or failure.</param>
+        [Obsolete("Close(MonoBehaviour monobehaviour ..) is deprecated. Use Close() without monobehaviour instead.")]
         public static void Close(MonoBehaviour monobehaviour, Action<bool> callback)
         {
             monobehaviour.StartCoroutine(InversiveExperience.Close(x => callback(x)));
@@ -194,10 +203,99 @@ namespace Inversive.SDK
         /// <param name="monobehaviour">The MonoBehaviour instance to start the coroutine.</param>
         /// <param name="obj">Object to be serialized and saved as JSON.</param>
         /// <param name="callback">Callback function invoked with the saved JSON upon success or null upon failure.</param>
+        [Obsolete("SaveJson(MonoBehaviour monobehaviour ..) is deprecated. Use SaveJson() without monobehaviour instead.")]
         public static void SaveJson(MonoBehaviour monobehaviour, object obj, Action<string> callback)
         {
             monobehaviour.StartCoroutine(InversiveExperience.SaveJson(obj, x => callback(x)));
         }
+
+        #endregion
+
+        #region New Sdk Methods
+
+        /// <summary>
+        /// Initializes the user session.
+        /// Init() must be called before using anything else.
+        /// </summary>
+        /// <param name="callback">Callback function invoked with the session ID upon successful initialization.</param>
+        public static void Init(Action<string> callback)
+        {
+            CoroutineRunner.Instance.StartCoroutine(InversiveExperience.Init(x => callback(x)));
+        }
+
+        /// <summary>
+        /// Starts the session by setting the start date.
+        /// </summary>
+        /// <param name="callback">Callback function invoked with a boolean indicating success or failure.</param>
+        public static void StartExperience(Action<bool> callback)
+        {
+            CoroutineRunner.Instance.StartCoroutine(InversiveExperience.Start(x => callback(x)));
+        }
+
+        /// <summary>
+        /// Executes a specific action within a chapter of the experience.
+        /// Here's an example implementation with a chapter name "FirstChapter" and an action name "FirstAction", values a list of string values :
+        /// InversiveSdk.ExecuteAction(this, "FirstChapter", "FirstAction" , values, (x) => { Debug.Log($"Action score : {x}"); });
+        /// </summary>
+        /// <param name="chapterName">Name of the chapter containing the action.</param>
+        /// <param name="actionName">Name of the action to be executed.</param>
+        /// <param name="values">Values associated with the action. Sent as List of String</param>
+        /// <param name="callback">Callback function invoked with the calculated score upon completion.</param>
+        public static void ExecuteAction(string chapterName, string actionName, List<string> values, Action<int?> callback)
+        {
+            CoroutineRunner.Instance.StartCoroutine(InversiveExperience.ExecuteAction(chapterName, actionName, values, x => callback(x)));
+        }
+
+        /// <summary>
+        /// Starts a specific chapter of the experience.
+        /// </summary>
+        /// <param name="chapterName">Name of the chapter to be started.</param>
+        /// <param name="callback">Callback function invoked with a boolean indicating success or failure.</param>
+        public static void StartChapter(string chapterName, Action<bool> callback)
+        {
+            CoroutineRunner.Instance.StartCoroutine(InversiveExperience.StartChapter(chapterName, x => callback(x)));
+        }
+
+        /// <summary>
+        /// Ends the session.
+        /// Must be called to be able to call the GetGlobalScore() and GetDisplayedGlobalScore() functions.
+        /// </summary>
+        /// <param name="callback">Callback function invoked with a boolean indicating success or failure.</param>
+        public static void End(Action<bool> callback)
+        {
+            CoroutineRunner.Instance.StartCoroutine(InversiveExperience.End(x => callback(x)));
+        }
+
+        /// <summary>
+        /// Resets the session by deleting its data from the current session.
+        /// </summary>
+        /// <param name="callback">Callback function invoked with a boolean indicating success or failure.</param>
+        public static void Retry(Action<bool> callback)
+        {
+            CoroutineRunner.Instance.StartCoroutine(InversiveExperience.Retry(x => callback(x)));
+        }
+
+        /// <summary>
+        /// Closes the session.
+        /// Must be called instead of End() if the session is not to be terminated. 
+        /// </summary>
+        /// <param name="callback">Callback function invoked with a boolean indicating success or failure.</param>
+        public static void Close(Action<bool> callback)
+        {
+            CoroutineRunner.Instance.StartCoroutine(InversiveExperience.Close(x => callback(x)));
+        }
+
+        /// <summary>
+        /// Saves JSON data associated with the session.
+        /// </summary>
+        /// <param name="obj">Object to be serialized and saved as JSON.</param>
+        /// <param name="callback">Callback function invoked with the saved JSON upon success or null upon failure.</param>
+        public static void SaveJson(object obj, Action<string> callback)
+        {
+            CoroutineRunner.Instance.StartCoroutine(InversiveExperience.SaveJson(obj, x => callback(x)));
+        }
+
+        #endregion
 
         #endregion
     }

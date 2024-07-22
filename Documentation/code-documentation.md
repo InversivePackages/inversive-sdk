@@ -80,24 +80,21 @@ The application provides a lot of features. They are documented below.
 >
 >The methods below call the Inversive platform sdk api. Here's the [swagger link](https://sdk.vrcxp.com/) for your implementations. 
 
-#### `Init(MonoBehaviour monobehaviour, Action<string> callback)`
+#### `Init(Action<string> callback)`
 - Initializes the user session.
 - Init() must be called before using anything else.
 - Parameters:
-    - `monobehaviour`: The MonoBehaviour instance to start the coroutine.
     - `callback`: Callback function invoked with the session ID upon successful initialization.
 
-#### `StartExperience(MonoBehaviour monobehaviour, Action<bool> callback)`
+#### `StartExperience(Action<bool> callback)`
 - Starts the session by setting the start date.
 - Parameters:
-    - `monobehaviour`: The MonoBehaviour instance to start the coroutine.
     - `callback`: Callback function invoked with a boolean indicating success or failure.
 
-#### `ExecuteAction(MonoBehaviour monobehaviour, string chapterName, string actionName, List<string> values, Action<int?> callback)`
+#### `ExecuteAction(string chapterName, string actionName, List<string> values, Action<int?> callback)`
 - Executes a specific action within a chapter of the experience.
 - ⚠️ **Important**: This method uses the property **Name** of `ExperienceActionModel`and the property **Name** of `ExperienceChapterModel` as identifiers to retrieve the action concerned.
 - Parameters:
-    - `monobehaviour`: The MonoBehaviour instance to start the coroutine.
     - `chapterName`: Name of the chapter containing the action.
     - `actionName`: Name of the action to be executed.
     - `values`: Values associated with the action. Sent as List of String that can contain a single value **or** several values sent for an action whose response type (ActionResponseType property in [ExperienceActionModel](../Runtime/InversiveClasses.cs)) is of type MultipleValues.
@@ -108,19 +105,17 @@ The application provides a lot of features. They are documented below.
     InversiveSdk.ExecuteAction(this, "FirstChapter", "FirstAction" , values, (x) => { Debug.Log($"Action score : {x}"); });
     ```
 
-#### `StartChapter(MonoBehaviour monobehaviour, string chapterName, Action<bool> callback)`
+#### `StartChapter(string chapterName, Action<bool> callback)`
 - Starts a specific chapter of the experience.
 - ⚠️ **Important** : This method uses the property **Name** of `ExperienceChapterModel` as identifier to retrieve the chapter concerned.
 - Parameters:
-    - `monobehaviour`: The MonoBehaviour instance to start the coroutine.
     - `chapterName`: Name of the chapter to be started.
     - `callback`: Callback function invoked with a boolean indicating success or failure.
 
-#### `End(MonoBehaviour monobehaviour, Action<bool> callback)`
+#### `End(Action<bool> callback)`
 - Ends the session.
 - Must be called to be able to call the `GetGlobalScore()` and `GetDisplayedGlobalScore()` functions.
 - Parameters:
-    - `monobehaviour`: The MonoBehaviour instance to start the coroutine.
     - `callback`: Callback function invoked with a boolean indicating success or failure.
 
     Example:
@@ -134,26 +129,23 @@ The application provides a lot of features. They are documented below.
     });
     ```
 
-#### `Retry(MonoBehaviour monobehaviour, Action<bool> callback)`
+#### `Retry(Action<bool> callback)`
 - Resets the session by deleting its data from the current session.
 - Parameters:
-    - `monobehaviour`: The MonoBehaviour instance to start the coroutine.
     - `callback`: Callback function invoked with a boolean indicating success or failure.
 
-#### `Close(MonoBehaviour monobehaviour, Action<bool> callback)`
+#### `Close(Action<bool> callback)`
 - Closes the session.
 - Must be called instead of End() if the session is not to be terminated.
 - Parameters:
-    - `monobehaviour`: The MonoBehaviour instance to start the coroutine.
     - `callback`: Callback function invoked with a boolean indicating success or failure.
 
-#### `SaveJson(MonoBehaviour monobehaviour, object obj, Action<string> callback)`
+#### `SaveJson(object obj, Action<string> callback)`
  - Saves JSON data associated with the session.
 - The json is stored in a string property in the model representing the session. 
 - ⚠️ **Warning** , Each time you save a json, the previous one is overwritten. 
 - You can access the data via the [GetSavedJson()](#getsavedjson) method. 
 - Parameters:
-    - `monobehaviour`: The MonoBehaviour instance to start the coroutine.
     - `obj`: Object to be serialized and saved as JSON.
     - `callback`: Callback function invoked with the saved JSON upon success or null upon failure.
     

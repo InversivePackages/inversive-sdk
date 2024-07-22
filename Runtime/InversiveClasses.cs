@@ -200,3 +200,9 @@ public enum ScoringEnum
     Twenty = 2,
     Letter = 3
 }
+
+[System.Serializable]
+public class ErrorResponse
+{
+    public string error;
+}

@@ -108,7 +108,7 @@ public class InversiveLoginWindow : EditorWindow
                 sessionId = x.downloadHandler.text;
                 if (!string.IsNullOrEmpty(sessionId))
                     InversiveService.SetAccessToken(sessionId);
-                EditorUtility.DisplayDialog("Token Created !", "You can now access to the experience editor\n\n", "Ok");
+                EditorUtility.DisplayDialog("App Id generated !", "Your project is now linked to your next experience creation on Inversive platform.\n\n", "Ok");
                 Close();
                 ExperienceEditor.ShowWindowAfterLogin();
             }

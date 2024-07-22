@@ -22,7 +22,6 @@ public class ExperienceEditor : EditorWindow
             if (!string.IsNullOrEmpty(value))
             {
                 InversiveService.SetAccessToken(value);
-                Repaint();
             }
         }
     }
@@ -245,6 +244,7 @@ public class ExperienceEditor : EditorWindow
                 {
                     InversiveService.SetAccessToken(ImportJsonAccessToken);
                     EditorCoroutineUtility.StartCoroutine(GetExperienceHead(), this);
+                    Repaint();
                 }
             }
             EditorGUILayout.EndHorizontal();
@@ -931,10 +931,17 @@ public class ExperienceEditor : EditorWindow
         {
             Id = -(Experience.Chapters.Count(x => x.Id <= 0)),
             Name = $"New Chapter {Experience.Chapters.Count}",
-            Order = Experience.Chapters.Count
+            Order = Experience.Chapters.Count,
+            isFoldout = true
         };
 
+        foreach (var chapter in Experience.Chapters)
+        {
+            chapter.isFoldout = false;
+        }
+
         Experience.Chapters.Add(newChapter);
+        GUIUtility.keyboardControl = 0;
     }
 
     private void AddAction(int chapterIndex)
@@ -947,9 +954,17 @@ public class ExperienceEditor : EditorWindow
                 Name = $"New Action {Experience.Chapters[chapterIndex].Actions.Count}",
                 ExperienceChapterId = Experience.Chapters[chapterIndex].Id,
                 ActionType = ActionTypeEnum.Boolean,
-                ActionResponseTypeEnum = ActionResponseTypeEnum.Unique
+                ActionResponseTypeEnum = ActionResponseTypeEnum.Unique,
+                isFoldout = true
             };
+
+            foreach (var action in Experience.Chapters[chapterIndex].Actions)
+            {
+                action.isFoldout = false;
+            }
+
             Experience.Chapters[chapterIndex].Actions.Add(newAction);
+            GUIUtility.keyboardControl = 0;
         }
     }
 
@@ -980,6 +995,7 @@ public class ExperienceEditor : EditorWindow
                         break;
                 }
                 Experience.Chapters[chapterIndex].Actions[actionIndex].ExperienceActionRatingLevels.Add(newRatingLevel);
+                GUIUtility.keyboardControl = 0;
             }
         }
     }
@@ -1020,7 +1036,7 @@ public class ExperienceEditor : EditorWindow
                         newValue.GivenResponse = "True";
                         break;
                     case ActionTypeEnum.String:
-                        newValue.GivenResponse = "Veuillez saisir une rï¿½ponse";
+                        newValue.GivenResponse = "Veuillez saisir une réponse";
                         break;
                     case ActionTypeEnum.Float:
                         newValue.GivenResponse = "0,0";
@@ -1030,6 +1046,7 @@ public class ExperienceEditor : EditorWindow
                         break;
                 }
                 Experience.Chapters[chapterIndex].Actions[actionIndex].MultipleValues.Add(newValue);
+                GUIUtility.keyboardControl = 0;
             }
         }
     }
@@ -1134,7 +1151,11 @@ public class ExperienceEditor : EditorWindow
         EditorCoroutineUtility.StartCoroutine(SaveExperienceModel(Experience, (x) =>
         {
             if (x.result != UnityWebRequest.Result.Success)
-                Debug.LogError(InversiveUtilities.Message($"Save failed ! : \n\n {x.error}"));
+            {
+                string jsonResponse = x.downloadHandler.text;
+                ErrorResponse errorResponse = JsonUtility.FromJson<ErrorResponse>(jsonResponse);
+                Debug.LogError(InversiveUtilities.Message($"Save failed ! : {errorResponse.error} \n\n{x.error}"));
+            }
             else
             {
                 Debug.Log(InversiveUtilities.Message("Save succeed !"));
@@ -1248,6 +1269,23 @@ public class ExperienceEditor : EditorWindow
 
     private void ClearActionDataOnChange(ExperienceActionModel action, bool IsResponseTypeChanged = false)
     {
+        var allowedResponseTypes = new ActionResponseTypeEnum[] {
+                        ActionResponseTypeEnum.Unique,
+                        ActionResponseTypeEnum.MultipleValues,
+                        ActionResponseTypeEnum.Interval,
+                        ActionResponseTypeEnum.RatingLevel
+                    };
+        if (action.ActionType == ActionTypeEnum.String)
+            allowedResponseTypes = new ActionResponseTypeEnum[] { ActionResponseTypeEnum.Unique, ActionResponseTypeEnum.MultipleValues };
+        else if (action.ActionType == ActionTypeEnum.Boolean)
+            allowedResponseTypes = new ActionResponseTypeEnum[] { ActionResponseTypeEnum.Unique };
+
+        if (!allowedResponseTypes.Contains(action.ActionResponseTypeEnum))
+        {
+            action.ActionResponseTypeEnum = allowedResponseTypes.FirstOrDefault();
+            IsResponseTypeChanged = true;
+        }
+
         if (action.ActionResponseTypeEnum == ActionResponseTypeEnum.Unique)
         {
             switch (action.ActionType)
@@ -1256,7 +1294,7 @@ public class ExperienceEditor : EditorWindow
                     action.UniqueGoodAnswer = "True";
                     break;
                 case ActionTypeEnum.String:
-                    action.UniqueGoodAnswer = "Veuillez saisir une rï¿½ponse";
+                    action.UniqueGoodAnswer = "Veuillez saisir une réponse";
                     break;
                 case ActionTypeEnum.Float:
                     action.UniqueGoodAnswer = "0,0";
@@ -1294,7 +1332,7 @@ public class ExperienceEditor : EditorWindow
                             value.GivenResponse = "True";
                             break;
                         case ActionTypeEnum.String:
-                            value.GivenResponse = "Veuillez saisir une rï¿½ponse";
+                            value.GivenResponse = "Veuillez saisir une réponse";
                             break;
                         case ActionTypeEnum.Float:
                             value.GivenResponse = "0,0";
