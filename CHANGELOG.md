@@ -2,6 +2,12 @@
 
 
 
+## 1.0.8
+
+- Resolved message for save failed errors Resolved issues on ExperienceEditor Window Removed Monobehaviour variables from InversiveSdk methods Sharing AppId via git is now possible Updated Code documentation
+- Update version to 1.0.7 in package.json and CHANGELOG.md
+
+
 ## 1.0.7
 
 - Add display error on Save Model FIxed GetChapters()
