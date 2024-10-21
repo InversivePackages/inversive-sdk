@@ -2,6 +2,12 @@
 
 
 
+## 1.0.9
+
+- 2024.Q3.5 : Add reporting system on testing experiences
+- Update version to 1.0.8 in package.json and CHANGELOG.md
+
+
 ## 1.0.8
 
 - Resolved message for save failed errors Resolved issues on ExperienceEditor Window Removed Monobehaviour variables from InversiveSdk methods Sharing AppId via git is now possible Updated Code documentation
