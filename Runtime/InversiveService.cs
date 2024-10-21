@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class InversiveService
 {
-    private static readonly string FilePath = Path.Combine(Application.dataPath, "Inversive SDK", "AccessToken.txt");
+    private static readonly string DirectoryPath = Path.Combine(Application.dataPath, "Inversive SDK");
+    private static readonly string FilePath = Path.Combine(DirectoryPath, "AccessToken.txt");
 
     private static string AccessToken;
 
@@ -13,6 +14,10 @@ public class InversiveService
     {
         try
         {
+            if (!Directory.Exists(DirectoryPath))
+            {
+                Directory.CreateDirectory(DirectoryPath);
+            }
             File.WriteAllText(FilePath, appId);
             AccessToken = appId;
         }

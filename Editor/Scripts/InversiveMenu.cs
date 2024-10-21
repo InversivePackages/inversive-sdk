@@ -23,7 +23,7 @@ public class InversiveMenu : EditorWindow
     private static readonly string InversiveIconPath = "Packages/com.inversive.inversive-sdk/Editor/UI/inversive-logo.png";
 
 
-    public static readonly string ChangelogURL = new Uri(InversiveUtilities.GetApiUrl() + "dev/changelog/get-latest/").AbsoluteUri;
+    public static readonly string ChangelogURL = new Uri(InversiveUtilities.ApiUrl + "dev/changelog/get-latest/").AbsoluteUri;
 
     private static readonly string ManualURL = "https://github.com/InversivePackages/inversive-sdk/blob/main/Documentation/installation-guide.md";
     private static readonly string BasicURL = "https://github.com/InversivePackages/inversive-sdk/blob/main/Documentation/code-documentation.md";

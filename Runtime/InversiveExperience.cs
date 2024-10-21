@@ -193,9 +193,9 @@ public class InversiveExperience
     /// </summary>
     /// <param name="relativePath">The relative path to be appended to the base URL.</param>
     /// <returns>A Uri object representing the composed URL.</returns>
-    private static Uri GetUri(string relativePath)
+    public static Uri GetUri(string relativePath)
     {
-        var baseUri = new Uri(InversiveUtilities.GetApiUrl());
+        var baseUri = new Uri(InversiveUtilities.ApiUrl);
         return new Uri(baseUri, relativePath);
     }
 
@@ -210,7 +210,7 @@ public class InversiveExperience
     /// - For other platforms, it retrieves the session ID from command-line arguments.
     /// </remarks>
     /// <returns>The session ID as a string or an empty string if not found.</returns>
-    private static string GetSessionId()
+    public static string GetSessionId()
     {
 #if UNITY_EDITOR
         return string.Empty;

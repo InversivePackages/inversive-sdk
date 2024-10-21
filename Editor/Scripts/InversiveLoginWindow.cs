@@ -133,7 +133,7 @@ public class InversiveLoginWindow : EditorWindow
 
     private static Uri GetUri(string relativePath)
     {
-        var baseUri = new Uri(InversiveUtilities.GetApiUrl());
+        var baseUri = new Uri(InversiveUtilities.ApiUrl);
         return new Uri(baseUri, relativePath);
     }
 
