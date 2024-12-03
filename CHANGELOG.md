@@ -2,6 +2,13 @@
 
 
 
+## 1.1.0
+
+- Reporting : Fix WebGl compile error
+- Reporting : Fix WebGL compile error
+- Update version to 1.0.9 in package.json and CHANGELOG.md
+
+
 ## 1.0.9
 
 - 2024.Q3.5 : Add reporting system on testing experiences
