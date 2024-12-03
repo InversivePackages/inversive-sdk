@@ -110,6 +110,7 @@ namespace Reporting
             CreateLogMessage(filePath);
 #elif UNITY_WEBGL
             // WebGL behaviour
+            string fileName = string.Concat(prefixScreenshotName, timestamp, fileExtension);
             string encodedText = System.Convert.ToBase64String(bytes);
             Application.ExternalCall("DownloadScreenshot", encodedText, fileName);
 
