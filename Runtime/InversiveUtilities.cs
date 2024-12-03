@@ -5,7 +5,7 @@ public class InversiveUtilities
 {
     public static string TAG = "InversiveSDK";
 
-    private const string _ApiUrl = "https://dev-sdk.vrcxp.com/";
+    private const string _ApiUrl = "https://sdk.vrcxp.com/";
 
     public static string ApiUrl => _ApiUrl; 
     public static string Message(string message) { return $"{TAG} - Message :\n {message}"; }
