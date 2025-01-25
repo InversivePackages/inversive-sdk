@@ -19,6 +19,23 @@ Inversive SDK is a new tool, but encountering issues during usage is possible. B
    - The experience model values are stored in PlayerPrefs, hence not automatically synced.
    - To sync the model among collaborators, push the model changes to the remote experience model selecting `Push Model`. Collaborators can then update their local models by selecting `Update Model` in the experience editor.
 
+### Issue on JSON Deserialization in WebGL Unity Build
+ 
+In Unity WebGL builds, you may encounter the following error during JSON deserialization:  
+`JsonSerializationException: Unable to find a constructor to use for type [type_name]`.
+
+This issue is often related to Unity’s Managed Stripping Level settings, which may inadvertently strip essential constructors or types required for JSON serialization/deserialization.
+
+**To resolve this issue : In Unity, set Stripping Level to Minimal**  
+
+In the Player settings, reduce the **Managed Stripping Level** to **Minimal**:
+
+- Open **Edit > Project Settings > Player**.
+- Under **Other Settings**, locate **Managed Stripping Level**.
+- Set it to **Minimal**.
+
+This prevents Unity from stripping constructors that JSON libraries rely on.
+
 ### Error codes : 
 
 #### `002: Success`
