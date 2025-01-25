@@ -19,7 +19,7 @@ Inversive SDK is a new tool, but encountering issues during usage is possible. B
    - The experience model values are stored in PlayerPrefs, hence not automatically synced.
    - To sync the model among collaborators, push the model changes to the remote experience model selecting `Push Model`. Collaborators can then update their local models by selecting `Update Model` in the experience editor.
 
-### Issue on JSON Deserialization in WebGL Unity Build
+### `Issue on JSON Deserialization in WebGL Unity Build`
  
 In Unity WebGL builds, you may encounter the following error during JSON deserialization:  
 `JsonSerializationException: Unable to find a constructor to use for type [type_name]`.
