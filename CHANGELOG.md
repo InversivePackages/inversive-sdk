@@ -2,6 +2,14 @@
 
 
 
+## 1.1.1
+
+- Merge Start() logic into Init() & Update Code Documentation
+- Update troubleshooting.md
+- Update troubleshooting.md
+- Update version to 1.1.0 in package.json and CHANGELOG.md
+
+
 ## 1.1.0
 
 - Reporting : Fix WebGl compile error
