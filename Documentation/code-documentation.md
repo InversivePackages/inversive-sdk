@@ -86,7 +86,7 @@ The application provides a lot of features. They are documented below.
 - Parameters:
     - `callback`: Callback function invoked with the session ID upon successful initialization.
 
-#### `StartExperience(Action<bool> callback)`
+#### `StartExperience(Action<bool> callback)` **(Obsolete, as it is now handled within Init())**
 - Starts the session by setting the start date.
 - Parameters:
     - `callback`: Callback function invoked with a boolean indicating success or failure.

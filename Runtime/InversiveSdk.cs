@@ -227,6 +227,7 @@ namespace Inversive.SDK
         /// Starts the session by setting the start date.
         /// </summary>
         /// <param name="callback">Callback function invoked with a boolean indicating success or failure.</param>
+        [Obsolete("The logic is now handled directly within Init().")]
         public static void StartExperience(Action<bool> callback)
         {
             CoroutineRunner.Instance.StartCoroutine(InversiveExperience.Start(x => callback(x)));

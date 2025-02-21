@@ -107,11 +107,6 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
-        //Signals that the session has been started
-        InversiveSdk.StartExperience((IsSuccess) =>
-        {
-            Debug.Log($"Started Experience succeed ? : {IsSuccess}");
-        });
         selectedAnswers.Clear();
         NextButton.SetActive(false);
         PreviousButton.SetActive(false);
