@@ -2,6 +2,13 @@
 
 
 
+## 1.1.2
+
+- Merge pull request #5 from InversivePackages/sso
+- Updated InversiveLoginWindow.cs to match SSO login requirements
+- Update version to 1.1.1 in package.json and CHANGELOG.md
+
+
 ## 1.1.1
 
 - Merge Start() logic into Init() & Update Code Documentation
