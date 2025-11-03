@@ -339,9 +339,15 @@ public class InversiveLoginWindow : EditorWindow
     private IEnumerator GenerateExperienceAccessToken(string keycloakAccessToken)
     {
         string url = InversiveUtilities.ApiUrl + "account/generate-access-token";
-
-        using (UnityWebRequest request = UnityWebRequest.PostWwwForm(url, ""))
+        var formData = "";
+#if UNITY_2021_2_OR_NEWER
+        UnityWebRequest request = UnityWebRequest.Post(url, formData);
+#else
+        UnityWebRequest request = UnityWebRequest.PostWwwForm(url, formData);
+#endif
+        using (request)
         {
+
             // Add the Keycloak access token as Bearer token in the Authorization header
             request.SetRequestHeader("Authorization", "Bearer " + keycloakAccessToken);
             request.SetRequestHeader("Content-Type", "application/json");
