@@ -2,6 +2,12 @@
 
 
 
+## 1.1.3
+
+- Fix UnityWebRequest post action for newer versions Call "Post" method for UNITY_2021_2_OR_NEWER instead of "PostWwwForm" method when generating access token
+- Update version to 1.1.2 in package.json and CHANGELOG.md
+
+
 ## 1.1.2
 
 - Merge pull request #5 from InversivePackages/sso
